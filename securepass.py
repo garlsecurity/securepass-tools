@@ -42,8 +42,12 @@ class SecurePass(object):
 
         self.app_id = app_id
         self.app_secret = app_secret
-        self.endpoint = endpoint
         self._logger = logger
+
+        if endpoint is not None:
+            self.endpoint = endpoint
+        else:
+            self.endpoint = "https://beta.secure-pass.net/"
 
 
     def _SendRequest(self, method, path, content=None):
@@ -289,4 +293,156 @@ class SecurePass(object):
             raise Exception(response['errorMsg'])
 
 
+    ##
+    ## SecurePass Users handling
+    ##
 
+    # List users
+    def user_list(self, realm=None):
+        """ Get the list of applications in your realm
+        """
+
+        request = {}
+        tmpuser = []
+
+        if realm is not None:
+            request['REALM'] = realm
+
+        response = self._SendRequest(HTTP_POST, "/api/v1/users/list", content=request)
+
+        if response['rc'] == 0:
+            for user in response['username']:
+                tmpuser.append(user)
+
+            return tmpuser
+        else:
+            raise Exception(response['errorMsg'])
+
+    ## Get user info
+    def user_info(self, realm=None, user=None):
+        """ Get the details of a user in your realm
+        """
+
+        request = {}
+
+        if realm is not None:
+            request['REALM'] = realm
+
+        if user is not None:
+            request['USERNAME'] = user
+
+        response = self._SendRequest(HTTP_POST, "/api/v1/users/info", content=request)
+
+        if response['rc'] == 0:
+            del response['rc']
+            del response['errorMsg']
+
+            return response
+
+        else:
+            raise Exception(response['errorMsg'])
+
+    ## Authenticate user
+    def user_auth(self, user=None, secret=None):
+        """ Authenticate the user
+        """
+
+        request = {}
+
+        if user is not None:
+            request['USERNAME'] = user
+
+        if secret is not None:
+            request['SECRET'] = secret
+
+
+        response = self._SendRequest(HTTP_POST, "/api/v1/users/auth", content=request)
+
+        if response['rc'] == 0:
+            return response['authenticated']
+
+        else:
+            raise Exception(response['errorMsg'])
+
+
+    ## Add a user
+    def user_add(self, user=None, name=None, surname=None,
+                 email=None, mobile=None, nin=None, rfid=None, manager=None):
+        """ Add a user into the realm
+        """
+
+        request = {}
+
+        if user is not None:
+            request['USERNAME'] = user
+
+        if name is not None:
+            request['NAME'] = name
+
+        if surname is not None:
+            request['SURNAME'] = surname
+
+        if email is not None:
+            request['EMAIL'] = email
+
+        if mobile is not None:
+            request['MOBILE'] = mobile
+
+        if nin is not None:
+            request['NIN'] = nin
+
+        if rfid is not None:
+            request['RFID'] = rfid
+
+        if manager is not None:
+            request['MANAGER'] = manager
+
+        response = self._SendRequest(HTTP_POST, "/api/v1/users/add", content=request)
+
+        if response['rc'] == 0:
+            return response['username']
+
+        else:
+            raise Exception(response['errorMsg'])
+
+
+    ## Remove a user
+    def user_del(self, user=None):
+        """ Remove a user
+        """
+
+        request = {}
+
+        if user is not None:
+            request['USERNAME'] = user
+
+        response = self._SendRequest(HTTP_POST, "/api/v1/users/del", content=request)
+
+        if response['rc'] == 0:
+            return True
+
+        else:
+            raise Exception(response['errorMsg'])
+
+
+    ## Remove a user
+    def user_provision(self, user=None, swtoken=None):
+        """ Remove a user
+        """
+
+        request = {}
+        SWTOKENS = ('iphone', 'android', 'blackberry', 'software')
+
+        if user is not None:
+            request['USERNAME'] = user
+
+        if swtoken is not None and swtoken.lower() in SWTOKENS:
+            request['SWTOKEN'] = swtoken.lower()
+
+        response = self._SendRequest(HTTP_POST, "/api/v1/users/provision", content=request)
+
+        if response['rc'] == 0:
+            return True
+
+        else:
+            raise Exception(response['errorMsg'])
