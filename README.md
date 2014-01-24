@@ -6,4 +6,4 @@ Uses the SecurePass public APIs to manage.
 
 
 More information on the APIs here:
-http://support.secure-pass.net/wiki/index.php/Dreamliner_APIs
+https://beta.secure-pass.net/
