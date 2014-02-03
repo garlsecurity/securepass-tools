@@ -439,10 +439,36 @@ class SecurePass(object):
         if swtoken is not None and swtoken.lower() in SWTOKENS:
             request['SWTOKEN'] = swtoken.lower()
 
-        response = self._SendRequest(HTTP_POST, "/api/v1/users/provision", content=request)
+        response = self._SendRequest(HTTP_POST, "/api/v1/users/token/provision", content=request)
 
         if response['rc'] == 0:
             return True
+
+        else:
+            raise Exception(response['errorMsg'])
+
+
+
+    ##
+    ## SecurePass Group handling
+    ##
+    def group_member(self, user=None, group=None):
+        """ Check if user is member of a group
+        """
+
+        request = {}
+
+        if user is not None:
+            request['USERNAME'] = user
+
+        if group is not None:
+            request['GROUP'] = group
+
+
+        response = self._SendRequest(HTTP_POST, "/api/v1/groups/member", content=request)
+
+        if response['rc'] == 0:
+            return response['member']
 
         else:
             raise Exception(response['errorMsg'])

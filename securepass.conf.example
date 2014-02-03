@@ -1,0 +1,3 @@
+[default]
+APP_ID = <<Your App ID>>
+APP_SECRET = <<Your APP Secret>>
