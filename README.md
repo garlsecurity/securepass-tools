@@ -29,21 +29,27 @@ Note: we do not handle staff at this time. For future that will be reflected int
 The following settings have to be put into settings.py
 
 Required:
+```
 SP_APP_ID = <<SecurePass APP ID>>
 SP_APP_SECRET = <<SecurePass APP Secret>>
+```
 
 Optional:
+```
 SP_ENDPOINT = <<endpoint if different from default>>
 SP_AUTOCREATE_USER = <<True/False, autocreate user if not in database>>
-
+```
 
 Put securepass-tools in installed apps
+```
 INSTALLED_APPS += (
     'securepass-tools',
 )
+```
 
 Put the django authentication backend
+```
 AUTHENTICATION_BACKENDS = (
     'securepass-tools.djangoauth.SecurePassAuthBackend',
 )
-
+```
