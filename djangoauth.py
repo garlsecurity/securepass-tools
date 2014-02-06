@@ -34,6 +34,7 @@ class SecurePassAuthBackend(object):
                                           endpoint=endpoint)
 
 
+
         if sp_handle.user_auth(user=username, secret=password):
 
             try:
@@ -47,20 +48,23 @@ class SecurePassAuthBackend(object):
                 else:
                     return None
 
+            try:
+                myuser  = sp_handle.user_info(user=username)
 
-            myuser  = sp_handle.user_info(user=username)
+                mapping.first_name = myuser['name']
+                mapping.last_name  = myuser['surname']
+                mapping.is_active  = myuser['enabled']
+                mapping.email      = myuser['email']
 
-            mapping.first_name = myuser['name']
-            mapping.last_name  = myuser['surname']
-            mapping.is_active  = myuser['enabled']
-            mapping.email      = myuser['email']
-
-            mapping.save()
+                mapping.save()
+            except:
+                return None
 
             return mapping
 
         else:
             return None
+
 
     def get_user(self, user_id):
         """Retrieve the user's entry in the User model if it exists"""

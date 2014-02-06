@@ -5,6 +5,9 @@
 ##
 ## Contains some code from Ganeti project (c) Google Inc.
 ##
+## This library is under development, please sync from:
+## https://github.com/gpaterno/securepass-tools
+##
 ## (c) 2013 Giuseppe Paterno' (gpaterno@gpaterno.com)
 ##          GARL Sagl (www.garl.ch)
 ##
@@ -416,7 +419,7 @@ class SecurePass(object):
         if user is not None:
             request['USERNAME'] = user
 
-        response = self._SendRequest(HTTP_POST, "/api/v1/users/del", content=request)
+        response = self._SendRequest(HTTP_POST, "/api/v1/users/delete", content=request)
 
         if response['rc'] == 0:
             return True
