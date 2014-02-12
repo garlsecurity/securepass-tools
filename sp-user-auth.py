@@ -1,7 +1,8 @@
 #!/usr/bin/python
 ##
 ## SecurePass CLI tools utilities
-## Detail of a user
+## Test authentication
+## Exits 0 if ok, 1 if not authenticated
 ##
 ## (c) 2013 Giuseppe Paterno' (gpaterno@gpaterno.com)
 ##          GARL Sagl (www.garl.ch)
@@ -14,22 +15,21 @@ import logging
 from optparse import OptionParser
 
 
-parser = OptionParser(usage="""Get user details in SecurePass
+parser = OptionParser(usage="""Test authentication for SecurePass
 
-%prog [options] userid""")
+%prog [options] userid secret""")
 
 
 parser.add_option('-d', '--debug',
                   action='store_true', dest="debug_flag",
 	              help="Enable debug output",)
 
-parser.add_option('-r', '--realm',
-                  action='store', dest="realm",
-	              help="Set alternate realm",)
+parser.add_option('-o', '--no-output',
+                  action='store_true', dest="nooutput_flag",
+	              help="Suppress output",)
 
 
 opts, args = parser.parse_args()
-
 
 ## Set debug
 FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
@@ -47,7 +47,7 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
                                    app_secret=config['app_secret'],
                                    endpoint=config['endpoint'])
 
-## Check
+## Check user exists
 try:
     if args[0].strip() == "":
         print "Missing username. Try with --help"
@@ -56,28 +56,28 @@ except IndexError:
     print "Missing username. Try with --help"
     exit(1)
 
-
-## Display info
+## Check password exists
 try:
-    myuser = sp_handler.user_info(user=args[0], realm=opts.realm)
+    if args[1].strip() == "":
+        print "Missing secret. Try with --help"
+        exit(1)
+except IndexError:
+    print "Missing secret. Try with --help"
+    exit(1)
 
-    print "User details for %s" % args[0]
-    print "================================================\n"
-    print "Name.............: %s" % myuser['name']
-    print "Surname..........: %s" % myuser['surname']
-    print "E-mail...........: %s" % myuser['email']
-    print "Mobile nr........: %s" % myuser['mobile']
-    print "National ID......: %s" % myuser['nin']
-    print "RFID tag.........: %s" % myuser['rfid']
-    print "Token type.......: %s" % myuser['token']
 
-    print "Password status..:",
-
-    if myuser['pin']:
-        print "Enabled"
+## Test the actual authentication
+try:
+    if sp_handler.user_auth(user=args[0], secret=args[1]):
+        if not opts.nooutput_flag:
+            print "Authenticated!"
+        exit(0)
     else:
-        print "Disabled"
-
+        if not opts.nooutput_flag:
+            print "Access denied!"
+        exit(1)
 
 except Exception as e:
-    print e
+    if not opts.nooutput_flag:
+        print e
+    exit(1)

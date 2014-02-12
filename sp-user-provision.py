@@ -1,7 +1,7 @@
 #!/usr/bin/python
 ##
 ## SecurePass CLI tools utilities
-## Detail of a user
+## Provision a given user
 ##
 ## (c) 2013 Giuseppe Paterno' (gpaterno@gpaterno.com)
 ##          GARL Sagl (www.garl.ch)
@@ -14,7 +14,7 @@ import logging
 from optparse import OptionParser
 
 
-parser = OptionParser(usage="""Get user details in SecurePass
+parser = OptionParser(usage="""Provision SecurePass user
 
 %prog [options] userid""")
 
@@ -23,13 +23,15 @@ parser.add_option('-d', '--debug',
                   action='store_true', dest="debug_flag",
 	              help="Enable debug output",)
 
-parser.add_option('-r', '--realm',
-                  action='store', dest="realm",
-	              help="Set alternate realm",)
+parser.add_option('-t', '--token',
+                  action='store', dest="token",
+                  type='choice',
+                  choices=['iphone', 'android', 'blackberry', 'software',],
+                  default='software',
+	              help="Select token type (iphone, android, blackberry, software)",)
 
 
 opts, args = parser.parse_args()
-
 
 ## Set debug
 FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
@@ -57,27 +59,9 @@ except IndexError:
     exit(1)
 
 
-## Display info
+## Send provisioning request
 try:
-    myuser = sp_handler.user_info(user=args[0], realm=opts.realm)
-
-    print "User details for %s" % args[0]
-    print "================================================\n"
-    print "Name.............: %s" % myuser['name']
-    print "Surname..........: %s" % myuser['surname']
-    print "E-mail...........: %s" % myuser['email']
-    print "Mobile nr........: %s" % myuser['mobile']
-    print "National ID......: %s" % myuser['nin']
-    print "RFID tag.........: %s" % myuser['rfid']
-    print "Token type.......: %s" % myuser['token']
-
-    print "Password status..:",
-
-    if myuser['pin']:
-        print "Enabled"
-    else:
-        print "Disabled"
-
+    sp_handler.user_provision(user=args[0], swtoken=opts.token)
 
 except Exception as e:
     print e

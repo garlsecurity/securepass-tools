@@ -55,5 +55,11 @@ except IndexError:
 ## ask & remove
 choice = raw_input("Do you want to delete user %s (Y/N)? " % args[0]).lower()
 
-if choice == "yes" or choice == "y":
-    sp_handler.user_del(user=args[0])
+try:
+    if choice == "yes" or choice == "y":
+        sp_handler.user_del(user=args[0])
+    exit(0)
+
+except Exception as e:
+    print e
+    exit(1)

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 ##
 ## SecurePass CLI tools utilities
-## Detail of a user
+## Detail of an application
 ##
 ## (c) 2013 Giuseppe Paterno' (gpaterno@gpaterno.com)
 ##          GARL Sagl (www.garl.ch)
@@ -14,19 +14,14 @@ import logging
 from optparse import OptionParser
 
 
-parser = OptionParser(usage="""Get user details in SecurePass
+parser = OptionParser(usage="""Get application details in SecurePass
 
-%prog [options] userid""")
+%prog [options] appid""")
 
 
 parser.add_option('-d', '--debug',
                   action='store_true', dest="debug_flag",
 	              help="Enable debug output",)
-
-parser.add_option('-r', '--realm',
-                  action='store', dest="realm",
-	              help="Set alternate realm",)
-
 
 opts, args = parser.parse_args()
 
@@ -50,33 +45,34 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
 ## Check
 try:
     if args[0].strip() == "":
-        print "Missing username. Try with --help"
+        print "Missing appid. Try with --help"
         exit(1)
 except IndexError:
-    print "Missing username. Try with --help"
+    print "Missing appid. Try with --help"
     exit(1)
 
 
 ## Display info
 try:
-    myuser = sp_handler.user_info(user=args[0], realm=opts.realm)
+    myapp = sp_handler.app_info(app_id=args[0])
+    print myapp
 
-    print "User details for %s" % args[0]
+    print "Application details for %s" % args[0]
     print "================================================\n"
-    print "Name.............: %s" % myuser['name']
-    print "Surname..........: %s" % myuser['surname']
-    print "E-mail...........: %s" % myuser['email']
-    print "Mobile nr........: %s" % myuser['mobile']
-    print "National ID......: %s" % myuser['nin']
-    print "RFID tag.........: %s" % myuser['rfid']
-    print "Token type.......: %s" % myuser['token']
+    print "Label..............: %s" % myapp['label']
+    print "Realm..............: %s" % myapp['realm']
+    print "Restrict to group..: %s" % myapp['group']
+    print "Permissions........:",
 
-    print "Password status..:",
-
-    if myuser['pin']:
-        print "Enabled"
+    if myapp['write']:
+        print "read/write"
     else:
-        print "Disabled"
+        print "read-only"
+
+    print "IPv4 network ACL...: %s" % myapp['allow_network_ipv4']
+    print "IPv6 network ACL...: %s" % myapp['allow_network_ipv6']
+
+
 
 
 except Exception as e:

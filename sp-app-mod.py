@@ -1,0 +1,122 @@
+#!/usr/bin/python
+##
+## SecurePass CLI tools utilities
+## Modify application
+##
+## (c) 2013 Giuseppe Paterno' (gpaterno@gpaterno.com)
+##          GARL Sagl (www.garl.ch)
+##
+
+import utils
+import securepass
+import logging
+from optparse import OptionParser
+
+
+parser = OptionParser(usage="""Modify an application in SecurePass
+
+%prog [options] appid""")
+
+
+parser.add_option('-d', '--debug',
+                  action='store_true', dest="debug_flag",
+	              help="Enable debug output",)
+
+parser.add_option('-l', '--label',
+                  default=None,
+                  action='store', dest="label",
+	              help="Label",)
+
+parser.add_option('-4', '--ipv4',
+                  default=None,
+                  action='store', dest="ipv4",
+	              help="Restrict to IPv4 network",)
+
+parser.add_option('-6', '--ipv6',
+                  default=None,
+                  action='store', dest="ipv6",
+	              help="Restrict to IPv6 network",)
+
+parser.add_option('-g', '--group',
+                  default=None,
+                  action='store', dest="group",
+	              help="Group name (restriction)",)
+
+parser.add_option('-w', '--write',
+                  action='store_true', dest="write",
+                  default=False,
+	              help="Write capabilites",)
+
+parser.add_option('-r', '--read',
+                  action='store_true', dest="read",
+                  default=False,
+	              help="Readonly capabiliteies",)
+
+opts, args = parser.parse_args()
+
+
+## Set debug
+FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
+if opts.debug_flag:
+    logging.basicConfig(format=FORMAT, level=logging.DEBUG)
+else:
+    logging.basicConfig(format=FORMAT, level=logging.INFO)
+
+
+## Load config
+config =  utils.loadConfig()
+
+## Config the handler
+sp_handler = securepass.SecurePass(app_id=config['app_id'],
+                                   app_secret=config['app_secret'],
+                                   endpoint=config['endpoint'])
+
+## Check
+try:
+    if args[0].strip() == "":
+        print "Missing appid. Try with --help"
+        exit(1)
+except IndexError:
+    print "Missing appid. Try with --help"
+    exit(1)
+
+
+
+
+## Add the user
+logging.debug("Modifying application %s" % args[0])
+
+try:
+
+    ## Grabbing previous configuration
+    myapp = sp_handler.app_info(args[0])
+
+    if opts.label is not None:
+        myapp['label'] = opts.label
+
+    if opts.ipv4 is not None:
+         myapp['allow_network_ipv4'] = opts.ipv4
+
+    if opts.ipv6 is not None:
+        myapp['allow_network_ipv6'] = opts.ipv6
+
+    if opts.group is not None:
+        myapp['group'] = opts.group.strip()
+
+    if opts.write:
+        myapp['write'] = True
+
+    if opts.read:
+        myapp['write'] = False
+
+    result = sp_handler.app_modify(app_id=args[0],
+                                  label=myapp['label'],
+                                  allow_network_ipv4=myapp['allow_network_ipv4'],
+                                  allow_network_ipv6=myapp['allow_network_ipv6'],
+                                  write=myapp['write'],
+                                  group=myapp['group'])
+    exit(0)
+
+except Exception as e:
+    print e
+    exit(1)

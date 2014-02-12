@@ -1,0 +1,98 @@
+#!/usr/bin/python
+##
+## SecurePass CLI tools utilities
+## Add application
+##
+## (c) 2013 Giuseppe Paterno' (gpaterno@gpaterno.com)
+##          GARL Sagl (www.garl.ch)
+##
+
+import utils
+import securepass
+import logging
+from optparse import OptionParser
+
+
+parser = OptionParser(usage="""Add application in SecurePass
+
+%prog [options] label""")
+
+
+parser.add_option('-d', '--debug',
+                  action='store_true', dest="debug_flag",
+	              help="Enable debug output",)
+
+parser.add_option('-4', '--ipv4',
+                  default="0.0.0.0/0",
+                  action='store', dest="ipv4",
+	              help="Restrict to IPv4 network (default: 0.0.0.0/0)",)
+
+parser.add_option('-6', '--ipv6',
+                  default="::/0",
+                  action='store', dest="ipv6",
+	              help="Restrict to IPv6 network (default: ::/0)",)
+
+parser.add_option('-g', '--group',
+                  default="",
+                  action='store', dest="group",
+	              help="Group name (restriction)",)
+
+parser.add_option('-r', '--realm',
+                  action='store', dest="realm",
+	              help="Set alternate realm",)
+
+parser.add_option('-w', '--write',
+                  action='store_true', dest="write",
+                  default=False,
+	              help="Write capabilites (default readonly)",)
+
+
+opts, args = parser.parse_args()
+
+
+## Set debug
+FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
+if opts.debug_flag:
+    logging.basicConfig(format=FORMAT, level=logging.DEBUG)
+else:
+    logging.basicConfig(format=FORMAT, level=logging.INFO)
+
+
+## Load config
+config =  utils.loadConfig()
+
+## Config the handler
+sp_handler = securepass.SecurePass(app_id=config['app_id'],
+                                   app_secret=config['app_secret'],
+                                   endpoint=config['endpoint'])
+
+## Check
+try:
+    if args[0].strip() == "":
+        print "Missing label. Try with --help"
+        exit(1)
+except IndexError:
+    print "Missing label. Try with --help"
+    exit(1)
+
+
+
+
+## Add the user
+logging.debug("Adding application %s" % args[0])
+
+try:
+    result = sp_handler.app_add(label=args[0],
+                                allow_network_ipv4=opts.ipv4,
+                                allow_network_ipv6=opts.ipv6,
+                                write=opts.write,
+                                realm=opts.realm,
+                                group=opts.group.strip().lower())
+
+    print "Application ID: %s" % result['app_id']
+    print "Application Secret: %s" % result['app_secret']
+    print ""
+    print "Please save the above results, secret will be no longer displayed for security reasons."
+
+except Exception as e:
+    print e
