@@ -1,9 +1,9 @@
 #!/usr/bin/python
 ##
 ## SecurePass CLI tools utilities
-## Detail of an application
+## Remove a RADIUS remove
 ##
-## (c) 2013 Giuseppe Paterno' (gpaterno@gpaterno.com)
+## (c) 2014 Giuseppe Paterno' (gpaterno@gpaterno.com)
 ##          GARL Sagl (www.garl.ch)
 ##
 
@@ -14,9 +14,9 @@ import logging
 from optparse import OptionParser
 
 
-parser = OptionParser(usage="""Get application details in SecurePass
+parser = OptionParser(usage="""Delete a RADIUS in SecurePass
 
-%prog [options] appid""")
+%prog [options] RADIUS_IP_ADDRESS""")
 
 
 parser.add_option('-d', '--debug',
@@ -45,34 +45,24 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
 ## Check
 try:
     if args[0].strip() == "":
-        print "Missing appid. Try with --help"
+        print "Missing RADIUS ip address. Try with --help"
         exit(1)
 except IndexError:
-    print "Missing appid. Try with --help"
+    print "Missing RADIUS ip address. Try with --help"
     exit(1)
 
 
-## Display info
+## ask & remove
+choice = raw_input("Do you want to delete RADIUS %s (Y/N)? " % args[0]).lower()
+
 try:
-    myapp = sp_handler.app_info(app_id=args[0])
+    if choice == "yes" or choice == "y":
+        sp_handler.radius_del(radius=args[0])
+        exit(0)
 
-    print "Application details for %s" % args[0]
-    print "================================================\n"
-    print "Label..............: %s" % myapp['label']
-    print "Realm..............: %s" % myapp['realm']
-    print "Restrict to group..: %s" % myapp['group']
-    print "Permissions........:",
-
-    if myapp['write']:
-        print "read/write"
     else:
-        print "read-only"
-
-    print "IPv4 network ACL...: %s" % myapp['allow_network_ipv4']
-    print "IPv6 network ACL...: %s" % myapp['allow_network_ipv6']
-
-
-
+        exit(1)
 
 except Exception as e:
     print e
+    exit(1)

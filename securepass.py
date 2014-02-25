@@ -256,7 +256,7 @@ class SecurePass(object):
     # Create application
     def app_modify(self, app_id=None, label=None, allow_network_ipv4=None, allow_network_ipv6=None,
                 write=None, group=None, realm=None):
-        """ Add an application to SecurePass
+        """ Modify an application in SecurePass
         """
 
         request = {}
@@ -322,14 +322,11 @@ class SecurePass(object):
             raise Exception(response['errorMsg'])
 
     ## Get user info
-    def user_info(self, realm=None, user=None):
+    def user_info(self, user=None):
         """ Get the details of a user in your realm
         """
 
         request = {}
-
-        if realm is not None:
-            request['REALM'] = realm
 
         if user is not None:
             request['USERNAME'] = user
@@ -430,7 +427,7 @@ class SecurePass(object):
 
     ## Remove a user
     def user_provision(self, user=None, swtoken=None):
-        """ Remove a user
+        """ Provision a user
         """
 
         request = {}
@@ -472,6 +469,152 @@ class SecurePass(object):
 
         if response['rc'] == 0:
             return response['member']
+
+        else:
+            raise Exception(response['errorMsg'])
+
+
+
+    ##
+    ## SecurePass RADIUS handling
+    ##
+
+    ## List the radiuses
+    def radius_list(self, realm=None):
+        """ Lists RADIUS devices in a realm
+        """
+
+        request = {}
+        tmpradius = []
+
+        if realm is not None:
+            request['REALM'] = realm
+
+
+        response = self._SendRequest(HTTP_POST, "/api/v1/radius/list", content=request)
+
+        if response['rc'] == 0:
+            for radius in response['radius']:
+                tmpradius.append(radius)
+
+            return tmpradius
+        else:
+            raise Exception(response['errorMsg'])
+
+
+    ## Radius info
+    def radius_info(self, radius=None):
+        """ Get the details of a RADIUS in your realm
+        """
+
+        request = {}
+
+        if radius is not None:
+            request['RADIUS'] = radius
+
+        response = self._SendRequest(HTTP_POST, "/api/v1/radius/info", content=request)
+
+        if response['rc'] == 0:
+            del response['rc']
+            del response['errorMsg']
+
+            return response
+
+        else:
+            raise Exception(response['errorMsg'])
+
+
+    ## Delete Radius
+    def radius_del(self, radius=None):
+        """ Remove a RADIUS device
+        """
+
+        request = {}
+
+        if radius is not None:
+            request['RADIUS'] = radius
+
+        response = self._SendRequest(HTTP_POST, "/api/v1/radius/delete", content=request)
+
+        if response['rc'] == 0:
+            return True
+
+        else:
+            raise Exception(response['errorMsg'])
+
+    ## Modify a radius
+    def radius_modify(self, radius=None, name=None, secret=None,
+                      rfid=None, group=None, realm=None):
+        """ Modify a RADIUS device
+        """
+
+        request = {}
+
+        if radius is not None:
+            request['RADIUS'] = radius
+
+        if name is not None:
+            request['NAME'] = name
+
+        if secret is not None:
+            request['SECRET'] = secret
+
+        if rfid is not None:
+            request['RFID'] = rfid
+
+        if group is not None:
+            request['GROUP'] = group
+
+        if realm is not None:
+            request['REALM'] = realm
+
+        response = self._SendRequest(HTTP_POST, "/api/v1/radius/modify", content=request)
+
+        if response['rc'] == 0:
+
+            del response['rc']
+            del response['errorMsg']
+
+            return response
+
+        else:
+            raise Exception(response['errorMsg'])
+
+
+    ## Add a radius
+    def radius_add(self, radius=None, name=None, secret=None,
+                          rfid=None, group=None, realm=None):
+        """ Add a RADIUS device
+        """
+
+        request = {}
+
+        if radius is not None:
+            request['RADIUS'] = radius
+
+        if name is not None:
+            request['NAME'] = name
+
+        if secret is not None:
+            request['SECRET'] = secret
+
+        if rfid is not None:
+            request['RFID'] = rfid
+
+        if group is not None:
+            request['GROUP'] = group
+
+        if realm is not None:
+            request['REALM'] = realm
+
+        response = self._SendRequest(HTTP_POST, "/api/v1/radius/add", content=request)
+
+        if response['rc'] == 0:
+
+            del response['rc']
+            del response['errorMsg']
+
+            return response
 
         else:
             raise Exception(response['errorMsg'])
