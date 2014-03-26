@@ -19,11 +19,11 @@ parser = OptionParser(usage="""List RADIUS devices in SecurePass
 %prog [options]""")
 
 
-parser.add_option('-d', '--debug',
+parser.add_option('-D', '--debug',
                   action='store_true', dest="debug_flag",
 	              help="Enable debug output",)
 
-parser.add_option('-D', '--details',
+parser.add_option('-d', '--details',
                   action='store_true', dest="detail_flag",
 	              help="Enable debug output",)
 

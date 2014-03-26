@@ -18,7 +18,7 @@ parser = OptionParser(usage="""Add application in SecurePass
 %prog [options] label""")
 
 
-parser.add_option('-d', '--debug',
+parser.add_option('-D', '--debug',
                   action='store_true', dest="debug_flag",
 	              help="Enable debug output",)
 

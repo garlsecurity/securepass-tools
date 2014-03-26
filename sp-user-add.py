@@ -18,7 +18,7 @@ parser = OptionParser(usage="""Add user in SecurePass
 %prog [options] userid""")
 
 
-parser.add_option('-d', '--debug',
+parser.add_option('-D', '--debug',
                   action='store_true', dest="debug_flag",
 	              help="Enable debug output",)
 

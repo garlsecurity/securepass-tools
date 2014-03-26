@@ -449,6 +449,47 @@ class SecurePass(object):
 
 
 
+    ## Change user password
+    def user_password_change(self, user=None, password=None):
+        """ Change user password
+        """
+
+        request = {}
+
+        if user is not None:
+            request['USERNAME'] = user
+
+        if password is not None:
+            request['PASSWORD'] = password
+
+        response = self._SendRequest(HTTP_POST, "/api/v1/users/password/change", content=request)
+
+        if response['rc'] == 0:
+            return True
+
+        else:
+            raise Exception(response['errorMsg'])
+
+    ## Disable user password
+    def user_password_disable(self, user=None):
+        """ Disable password
+        """
+
+        request = {}
+
+        if user is not None:
+            request['USERNAME'] = user
+
+        response = self._SendRequest(HTTP_POST, "/api/v1/users/password/disable", content=request)
+
+        if response['rc'] == 0:
+            return True
+
+        else:
+            raise Exception(response['errorMsg'])
+
+
+
     ##
     ## SecurePass Group handling
     ##

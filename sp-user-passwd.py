@@ -1,8 +1,7 @@
 #!/usr/bin/python
 ##
 ## SecurePass CLI tools utilities
-## Test group membership
-## Exits 0 if ok, 1 if not belongs
+## Change/disable user's password
 ##
 ## (c) 2013 Giuseppe Paterno' (gpaterno@gpaterno.com)
 ##          GARL Sagl (www.garl.ch)
@@ -11,22 +10,23 @@
 
 import utils
 import securepass
+import getpass
 import logging
 from optparse import OptionParser
 
 
-parser = OptionParser(usage="""Test group membership for SecurePass
+parser = OptionParser(usage="""Change/disable user password for SecurePass
 
-%prog [options] userid group""")
+%prog [options] userid""")
 
 
 parser.add_option('-D', '--debug',
                   action='store_true', dest="debug_flag",
 	              help="Enable debug output",)
 
-parser.add_option('-o', '--no-output',
-                  action='store_true', dest="nooutput_flag",
-	              help="Suppress output",)
+parser.add_option('-d', '--disable',
+                  action='store_true', dest="disable_flag",
+	              help="Disable user's password",)
 
 
 opts, args = parser.parse_args()
@@ -56,28 +56,33 @@ except IndexError:
     print "Missing username. Try with --help"
     exit(1)
 
-## Check password exists
-try:
-    if args[1].strip() == "":
-        print "Missing group. Try with --help"
-        exit(1)
-except IndexError:
-    print "Missing group. Try with --help"
-    exit(1)
 
-
-## Test the actual authentication
-try:
-    if sp_handler.group_member(user=args[0], group=args[1]):
-        if not opts.nooutput_flag:
-            print "User %s belongs to group %s!" % (args[0], args[1])
+## If we ask for disable password
+if opts.disable_flag:
+    try:
+        sp_handler.user_password_disable(args[0].strip())
+        print "Password removed."
         exit(0)
-    else:
-        if not opts.nooutput_flag:
-            print "User %s not in group %s!" % (args[0], args[1])
+    except Exception as e:
+        print e
         exit(1)
 
-except Exception as e:
-    if not opts.nooutput_flag:
-        print e
-    exit(1)
+## if we ask for change password
+else:
+    password = getpass.getpass()
+    verifypw = getpass.getpass(prompt='Verify Password: ')
+
+    ## if matches
+    if password == verifypw:
+        try:
+            sp_handler.user_password_change(user=args[0].strip(), password=password)
+            print "Password changed."
+            exit(1)
+        except Exception as e:
+            print e
+            exit(1)
+
+    else:
+        print "Passwords don't match!"
+        exit(1)
+

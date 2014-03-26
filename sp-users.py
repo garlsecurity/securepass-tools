@@ -19,11 +19,11 @@ parser = OptionParser(usage="""List users in SecurePass
 %prog [options]""")
 
 
-parser.add_option('-d', '--debug',
+parser.add_option('-D', '--debug',
                   action='store_true', dest="debug_flag",
 	              help="Enable debug output",)
 
-parser.add_option('-D', '--details',
+parser.add_option('-d', '--details',
                   action='store_true', dest="detail_flag",
 	              help="Enable debug output",)
 
@@ -58,7 +58,7 @@ if opts.detail_flag:
 try:
     for user in sp_handler.user_list(realm=opts.realm):
         if opts.detail_flag:
-            user_detail = sp_handler.user_info(realm=opts.realm, user=user)
+            user_detail = sp_handler.user_info(user=user)
             print "%-30s %s %s" % (user, user_detail['name'], user_detail['surname'])
         else:
             print user

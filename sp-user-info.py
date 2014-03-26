@@ -19,14 +19,9 @@ parser = OptionParser(usage="""Get user details in SecurePass
 %prog [options] userid""")
 
 
-parser.add_option('-d', '--debug',
+parser.add_option('-D', '--debug',
                   action='store_true', dest="debug_flag",
 	              help="Enable debug output",)
-
-parser.add_option('-r', '--realm',
-                  action='store', dest="realm",
-	              help="Set alternate realm",)
-
 
 opts, args = parser.parse_args()
 
@@ -59,7 +54,7 @@ except IndexError:
 
 ## Display info
 try:
-    myuser = sp_handler.user_info(user=args[0], realm=opts.realm)
+    myuser = sp_handler.user_info(user=args[0])
 
     print "User details for %s" % args[0]
     print "================================================\n"
@@ -73,7 +68,7 @@ try:
 
     print "Password status..:",
 
-    if myuser['pin']:
+    if myuser['password']:
         print "Enabled"
     else:
         print "Disabled"

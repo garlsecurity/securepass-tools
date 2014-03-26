@@ -19,7 +19,7 @@ parser = OptionParser(usage="""Get RADIUS details in SecurePass
 %prog [options] RADIUS_IP_ADDRESS""")
 
 
-parser.add_option('-d', '--debug',
+parser.add_option('-D', '--debug',
                   action='store_true', dest="debug_flag",
 	              help="Enable debug output",)
 
