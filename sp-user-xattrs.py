@@ -1,7 +1,7 @@
 #!/usr/bin/python
 ##
 ## SecurePass CLI tools utilities
-## Detail of a user
+## Extended attributes operations
 ##
 ## (c) 2013 Giuseppe Paterno' (gpaterno@gpaterno.com)
 ##          GARL Sagl (www.garl.ch)
@@ -14,9 +14,9 @@ import logging
 from optparse import OptionParser
 
 
-parser = OptionParser(usage="""Get user details in SecurePass
+parser = OptionParser(usage="""Operate on users' extended attributes in SecurePass
 
-%prog [options] userid""")
+%prog [options] userid [list|set|get] """)
 
 
 parser.add_option('-D', '--debug',
@@ -42,44 +42,43 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
                                    app_secret=config['app_secret'],
                                    endpoint=config['endpoint'])
 
-## Check
+## Check username
 try:
     if args[0].strip() == "":
         print "Missing username. Try with --help"
         exit(1)
+
 except IndexError:
     print "Missing username. Try with --help"
     exit(1)
 
-
-## Display info
+## Check operation
 try:
-    myuser = sp_handler.user_info(user=args[0])
+    if args[1].strip().lower() != "list" and \
+       args[1].strip().lower() != "get" and  \
+       args[1].strip().lower() != "set":
+            print "Operation not valid. Try with --help"
+            exit(1)
 
-    print "User details for %s" % args[0]
-    print "================================================\n"
-    print "Name.............: %s" % myuser['name']
-    print "Surname..........: %s" % myuser['surname']
-    print "E-mail...........: %s" % myuser['email']
-    print "Mobile nr........: %s" % myuser['mobile']
-    print "National ID......: %s" % myuser['nin']
-    print "RFID tag.........: %s" % myuser['rfid']
-    print "Token type.......: %s" % myuser['token']
-    print "User status......:",
-
-    if myuser['enabled']:
-        print "Enabled"
-    else:
-        print "Disabled"
+except IndexError:
+    print "Operations not specifed. Try with --help"
+    exit(1)
 
 
-    print "Password status..:",
 
-    if myuser['password']:
-        print "Enabled"
-    else:
-        print "Disabled"
+## If list operation specified
+if args[1].strip().lower() == "list":
+
+    ## Display info
+    try:
+        attributes = sp_handler.users_xattr_list(user=args[0])
+
+        print "Extended attributes details for %s" % args[0]
+        print "================================================\n"
+
+        for attribute in attributes:
+            print "%s: %s" % (attribute, attributes[attribute])
 
 
-except Exception as e:
-    print e
+    except Exception as e:
+        print e

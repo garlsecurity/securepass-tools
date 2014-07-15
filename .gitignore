@@ -48,3 +48,6 @@ Thumbs.db
 ## Ignore Pycharm
 .idea/*
 test_sp.py
+
+## Ingnore conf
+securepass.conf

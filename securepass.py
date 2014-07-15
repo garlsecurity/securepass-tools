@@ -489,6 +489,80 @@ class SecurePass(object):
             raise Exception(response['errorMsg'])
 
 
+    ##
+    ## SecurePass users' extended attributes (xattr)
+    ##
+
+    def users_xattr_list(self, user=None):
+        """ Get Users' extended attributes
+        """
+
+        request = {}
+
+        if user is not None:
+            request['USERNAME'] = user
+
+        response = self._SendRequest(HTTP_POST, "/api/v1/users/xattrs/list", content=request)
+
+        if response['rc'] == 0:
+            del response['rc']
+            del response['errorMsg']
+
+            return response
+
+        else:
+            raise Exception(response['errorMsg'])
+
+
+    def users_xattr_set(self, user=None, attribute=None, value=None):
+        """ Set Users' extended attributes
+        """
+
+        request = {}
+
+        if user is not None:
+            request['USERNAME'] = user
+
+        if attribute is not None:
+            request['ATTRIBUTE'] = attribute
+
+        if value is not None:
+            request['VALUE'] = value
+
+        response = self._SendRequest(HTTP_POST, "/api/v1/users/xattrs/set", content=request)
+
+        if response['rc'] == 0:
+            del response['rc']
+            del response['errorMsg']
+
+            return response
+
+        else:
+            raise Exception(response['errorMsg'])
+
+
+    def users_xattr_delete(self, user=None, attribute=None):
+        """ Delete  Users' extended attribute
+        """
+
+        request = {}
+
+        if user is not None:
+            request['USERNAME'] = user
+
+        if attribute is not None:
+            request['ATTRIBUTE'] = attribute
+
+        response = self._SendRequest(HTTP_POST, "/api/v1/users/xattrs/delete", content=request)
+
+        if response['rc'] == 0:
+            del response['rc']
+            del response['errorMsg']
+
+            return response
+
+        else:
+            raise Exception(response['errorMsg'])
 
     ##
     ## SecurePass Group handling
