@@ -16,7 +16,7 @@ from optparse import OptionParser
 
 parser = OptionParser(usage="""Operate on users' extended attributes in SecurePass
 
-%prog [options] userid [list|set|get] """)
+%prog [options] userid [list|set|delete] """)
 
 
 parser.add_option('-D', '--debug',
@@ -56,7 +56,7 @@ except IndexError:
 try:
     if args[1].strip().lower() != "list" and \
        args[1].strip().lower() != "get" and  \
-       args[1].strip().lower() != "set":
+       args[1].strip().lower() != "delete":
             print "Operation not valid. Try with --help"
             exit(1)
 
@@ -79,6 +79,40 @@ if args[1].strip().lower() == "list":
         for attribute in attributes:
             print "%s: %s" % (attribute, attributes[attribute])
 
+
+    except Exception as e:
+        print e
+
+
+## Set values
+if args[1].strip().lower() == "set":
+
+    try:
+        ## Set value
+        sp_handler.users_xattr_set(user=args[0], attribute=args[2], value=args[3])
+
+        print "Attribute %s set for user %s" % (args[2], args[0])
+
+    except IndexError:
+            print "set <attribute> <value>"
+            exit(1)
+
+    except Exception as e:
+        print e
+
+
+## Delete
+if args[1].strip().lower() == "delete":
+
+    try:
+        ## Set value
+        sp_handler.users_xattr_delete(user=args[0], attribute=args[2])
+
+        print "Attribute %s deleted for user %s" % (args[2], args[0])
+
+    except IndexError:
+        print "delete <attribute>"
+        exit(1)
 
     except Exception as e:
         print e
