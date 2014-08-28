@@ -55,6 +55,7 @@ except IndexError:
 ## Check operation
 try:
     if args[1].strip().lower() != "list" and \
+       args[1].strip().lower() != "set" and \
        args[1].strip().lower() != "get" and  \
        args[1].strip().lower() != "delete":
             print "Operation not valid. Try with --help"
