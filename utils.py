@@ -11,8 +11,16 @@ import os, sys
 
 def loadConfig():
         """loadConfig returns cassandra servers"""
+
         conffiles = ['/etc/securepass.conf', '/usr/local/etc/securepass.conf', os.getcwd() + '/securepass.conf']
         #conffiles.append(os.path.join(os.path.expanduser("~"), ".securepass"))
+
+        ## Virtual Environment handling
+        # VIRTUAL_ENV
+        virtualenv = os.environ.get('VIRTUAL_ENV')
+        if virtualenv is not None:
+            conffiles.append(virtualenv)
+
         conf_found = 0
 
         ## Get Config File

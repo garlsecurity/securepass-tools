@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='SecurePass',
-    version='0.1.0',
+    version='0.3.0',
     author="Giuseppe Paterno'",
     author_email='gpaterno@gpaterno.com',
     packages=['securepass'],
