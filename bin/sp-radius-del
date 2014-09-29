@@ -1,36 +1,27 @@
 #!/usr/bin/python
 ##
 ## SecurePass CLI tools utilities
-## Radius list
+## Remove a RADIUS remove
 ##
 ## (c) 2014 Giuseppe Paterno' (gpaterno@gpaterno.com)
 ##          GARL Sagl (www.garl.ch)
 ##
 
 
-import utils
-import securepass
+from securepass import utils
+from securepass import securepass
 import logging
 from optparse import OptionParser
 
 
-parser = OptionParser(usage="""List RADIUS devices in SecurePass
+parser = OptionParser(usage="""Delete a RADIUS in SecurePass
 
-%prog [options]""")
+%prog [options] RADIUS_IP_ADDRESS""")
 
 
 parser.add_option('-D', '--debug',
                   action='store_true', dest="debug_flag",
 	              help="Enable debug output",)
-
-parser.add_option('-d', '--details',
-                  action='store_true', dest="detail_flag",
-	              help="Enable debug output",)
-
-parser.add_option('-r', '--realm',
-                  action='store', dest="realm",
-                  default=None,
-	              help="Set alternate realm",)
 
 opts, args = parser.parse_args()
 
@@ -51,27 +42,27 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
                                    app_secret=config['app_secret'],
                                    endpoint=config['endpoint'])
 
+## Check
+try:
+    if args[0].strip() == "":
+        print "Missing RADIUS ip address. Try with --help"
+        exit(1)
+except IndexError:
+    print "Missing RADIUS ip address. Try with --help"
+    exit(1)
 
-## List all apps
-if opts.detail_flag:
-    print "%-45s %-30s" % ("RADIUS", "FQDN")
-    print "============================================================================="
+
+## ask & remove
+choice = raw_input("Do you want to delete RADIUS %s (Y/N)? " % args[0]).lower()
 
 try:
-    for radius in sp_handler.radius_list(realm=opts.realm):
-        if opts.detail_flag:
-            radius_detail = sp_handler.radius_info(radius=radius)
-            print "%-45s %-30s" % (radius, radius_detail['name'])
-        else:
-            print radius
+    if choice == "yes" or choice == "y":
+        sp_handler.radius_del(radius=args[0])
+        exit(0)
 
+    else:
+        exit(1)
 
 except Exception as e:
     print e
-
-
-
-
-
-
-
+    exit(1)

@@ -51,3 +51,5 @@ test_sp.py
 
 ## Ingnore conf
 securepass.conf
+dist/*
+securepass.egg-info/*

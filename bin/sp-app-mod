@@ -7,8 +7,8 @@
 ##          GARL Sagl (www.garl.ch)
 ##
 
-import utils
-import securepass
+from securepass import utils
+from securepass import securepass
 import logging
 from optparse import OptionParser
 

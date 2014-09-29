@@ -1,27 +1,35 @@
 #!/usr/bin/python
 ##
 ## SecurePass CLI tools utilities
-## Users remove
+## Users list
 ##
 ## (c) 2013 Giuseppe Paterno' (gpaterno@gpaterno.com)
 ##          GARL Sagl (www.garl.ch)
 ##
 
 
-import utils
-import securepass
+from securepass import utils
+from securepass import securepass
 import logging
 from optparse import OptionParser
 
 
-parser = OptionParser(usage="""Delete a user in SecurePass
+parser = OptionParser(usage="""List users in SecurePass
 
-%prog [options] userid""")
+%prog [options]""")
 
 
 parser.add_option('-D', '--debug',
                   action='store_true', dest="debug_flag",
 	              help="Enable debug output",)
+
+parser.add_option('-d', '--details',
+                  action='store_true', dest="detail_flag",
+	              help="Enable debug output",)
+
+parser.add_option('-r', '--realm',
+                  action='store', dest="realm",
+	              help="Set alternate realm",)
 
 opts, args = parser.parse_args()
 
@@ -42,24 +50,26 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
                                    app_secret=config['app_secret'],
                                    endpoint=config['endpoint'])
 
-## Check
-try:
-    if args[0].strip() == "":
-        print "Missing username. Try with --help"
-        exit(1)
-except IndexError:
-    print "Missing username. Try with --help"
-    exit(1)
-
-
-## ask & remove
-choice = raw_input("Do you want to delete user %s (Y/N)? " % args[0]).lower()
+## List all users
+if opts.detail_flag:
+    print "%-30s %-30s" % ("User ID", "Name and Surname")
+    print "=========================================================================="
 
 try:
-    if choice == "yes" or choice == "y":
-        sp_handler.user_del(user=args[0])
-    exit(0)
+    for user in sp_handler.user_list(realm=opts.realm):
+        if opts.detail_flag:
+            user_detail = sp_handler.user_info(user=user)
+            print "%-30s %s %s" % (user, user_detail['name'], user_detail['surname'])
+        else:
+            print user
+
 
 except Exception as e:
     print e
-    exit(1)
+
+
+
+
+
+
+

@@ -1,21 +1,20 @@
 #!/usr/bin/python
 ##
 ## SecurePass CLI tools utilities
-## Change/disable user's password
+## Users remove
 ##
 ## (c) 2013 Giuseppe Paterno' (gpaterno@gpaterno.com)
 ##          GARL Sagl (www.garl.ch)
 ##
 
 
-import utils
-import securepass
-import getpass
+from securepass import utils
+from securepass import securepass
 import logging
 from optparse import OptionParser
 
 
-parser = OptionParser(usage="""Change/disable user password for SecurePass
+parser = OptionParser(usage="""Delete a user in SecurePass
 
 %prog [options] userid""")
 
@@ -24,12 +23,8 @@ parser.add_option('-D', '--debug',
                   action='store_true', dest="debug_flag",
 	              help="Enable debug output",)
 
-parser.add_option('-d', '--disable',
-                  action='store_true', dest="disable_flag",
-	              help="Disable user's password",)
-
-
 opts, args = parser.parse_args()
+
 
 ## Set debug
 FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
@@ -47,7 +42,7 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
                                    app_secret=config['app_secret'],
                                    endpoint=config['endpoint'])
 
-## Check user exists
+## Check
 try:
     if args[0].strip() == "":
         print "Missing username. Try with --help"
@@ -57,32 +52,14 @@ except IndexError:
     exit(1)
 
 
-## If we ask for disable password
-if opts.disable_flag:
-    try:
-        sp_handler.user_password_disable(args[0].strip())
-        print "Password removed."
-        exit(0)
-    except Exception as e:
-        print e
-        exit(1)
+## ask & remove
+choice = raw_input("Do you want to delete user %s (Y/N)? " % args[0]).lower()
 
-## if we ask for change password
-else:
-    password = getpass.getpass()
-    verifypw = getpass.getpass(prompt='Verify Password: ')
+try:
+    if choice == "yes" or choice == "y":
+        sp_handler.user_del(user=args[0])
+    exit(0)
 
-    ## if matches
-    if password == verifypw:
-        try:
-            sp_handler.user_password_change(user=args[0].strip(), password=password)
-            print "Password changed."
-            exit(1)
-        except Exception as e:
-            print e
-            exit(1)
-
-    else:
-        print "Passwords don't match!"
-        exit(1)
-
+except Exception as e:
+    print e
+    exit(1)

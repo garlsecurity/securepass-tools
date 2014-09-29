@@ -1,22 +1,22 @@
 #!/usr/bin/python
 ##
 ## SecurePass CLI tools utilities
-## Detail of an application
+## Detail of a user
 ##
 ## (c) 2013 Giuseppe Paterno' (gpaterno@gpaterno.com)
 ##          GARL Sagl (www.garl.ch)
 ##
 
 
-import utils
-import securepass
+from securepass import utils
+from securepass import securepass
 import logging
 from optparse import OptionParser
 
 
-parser = OptionParser(usage="""Get RADIUS details in SecurePass
+parser = OptionParser(usage="""Get user details in SecurePass
 
-%prog [options] RADIUS_IP_ADDRESS""")
+%prog [options] userid""")
 
 
 parser.add_option('-D', '--debug',
@@ -45,29 +45,40 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
 ## Check
 try:
     if args[0].strip() == "":
-        print "Missing RADIUS ip address. Try with --help"
+        print "Missing username. Try with --help"
         exit(1)
 except IndexError:
-    print "Missing RADIUS ip address. Try with --help"
+    print "Missing username. Try with --help"
     exit(1)
 
 
 ## Display info
 try:
-    radius = sp_handler.radius_info(radius=args[0])
+    myuser = sp_handler.user_info(user=args[0])
 
-    print "RADIUS details for %s" % args[0]
+    print "User details for %s" % args[0]
     print "================================================\n"
-    print "FQDN/Name..........: %s" % radius['name']
-    print "Secret.............: %s" % radius['secret']
-    print "Realm..............: %s" % radius['realm']
-    print "Restrict to group..: %s" % radius['group']
-    print "RFID tag...........:",
+    print "Name.............: %s" % myuser['name']
+    print "Surname..........: %s" % myuser['surname']
+    print "E-mail...........: %s" % myuser['email']
+    print "Mobile nr........: %s" % myuser['mobile']
+    print "National ID......: %s" % myuser['nin']
+    print "RFID tag.........: %s" % myuser['rfid']
+    print "Token type.......: %s" % myuser['token']
+    print "User status......:",
 
-    if radius['rfid']:
-        print "enabled"
+    if myuser['enabled']:
+        print "Enabled"
     else:
-        print "disabled"
+        print "Disabled"
+
+
+    print "Password status..:",
+
+    if myuser['password']:
+        print "Enabled"
+    else:
+        print "Disabled"
 
 
 except Exception as e:

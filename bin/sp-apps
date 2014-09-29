@@ -1,37 +1,38 @@
 #!/usr/bin/python
 ##
 ## SecurePass CLI tools utilities
-## Provision a given user
+## Application list
 ##
 ## (c) 2013 Giuseppe Paterno' (gpaterno@gpaterno.com)
 ##          GARL Sagl (www.garl.ch)
 ##
 
 
-import utils
-import securepass
+from securepass import utils
+from securepass import securepass
 import logging
 from optparse import OptionParser
 
 
-parser = OptionParser(usage="""Provision SecurePass user
+parser = OptionParser(usage="""List applications in SecurePass
 
-%prog [options] userid""")
+%prog [options]""")
 
 
 parser.add_option('-D', '--debug',
                   action='store_true', dest="debug_flag",
 	              help="Enable debug output",)
 
-parser.add_option('-t', '--token',
-                  action='store', dest="token",
-                  type='choice',
-                  choices=['iphone', 'android', 'blackberry', 'software',],
-                  default='software',
-	              help="Select token type (iphone, android, blackberry, software)",)
+parser.add_option('-d', '--details',
+                  action='store_true', dest="detail_flag",
+	              help="Enable debug output",)
 
+parser.add_option('-r', '--realm',
+                  action='store', dest="realm",
+	              help="Set alternate realm",)
 
 opts, args = parser.parse_args()
+
 
 ## Set debug
 FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
@@ -49,19 +50,27 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
                                    app_secret=config['app_secret'],
                                    endpoint=config['endpoint'])
 
-## Check
-try:
-    if args[0].strip() == "":
-        print "Missing username. Try with --help"
-        exit(1)
-except IndexError:
-    print "Missing username. Try with --help"
-    exit(1)
 
+## List all apps
+if opts.detail_flag:
+    print "%-45s %-30s" % ("App ID", "Label")
+    print "=========================================================================="
 
-## Send provisioning request
 try:
-    sp_handler.user_provision(user=args[0], swtoken=opts.token)
+    for app in sp_handler.app_list(realm=opts.realm):
+        if opts.detail_flag:
+            app_detail = sp_handler.app_info(app_id=app)
+            print "%-45s %-30s" % (app, app_detail['label'])
+        else:
+            print app
+
 
 except Exception as e:
     print e
+
+
+
+
+
+
+

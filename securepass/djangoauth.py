@@ -5,7 +5,7 @@
 ##          GARL Sagl (www.garl.ch)
 ##
 
-import securepass
+from securepass import securepass
 from django.conf import settings
 from django.contrib.auth.models import User
 

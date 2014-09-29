@@ -1,30 +1,37 @@
 #!/usr/bin/python
 ##
 ## SecurePass CLI tools utilities
-## Application remove
+## Provision a given user
 ##
 ## (c) 2013 Giuseppe Paterno' (gpaterno@gpaterno.com)
 ##          GARL Sagl (www.garl.ch)
 ##
 
 
-import utils
-import securepass
+from securepass import utils
+from securepass import securepass
 import logging
 from optparse import OptionParser
 
 
-parser = OptionParser(usage="""Delete an application in SecurePass
+parser = OptionParser(usage="""Provision SecurePass user
 
-%prog [options] appid""")
+%prog [options] userid""")
 
 
 parser.add_option('-D', '--debug',
                   action='store_true', dest="debug_flag",
 	              help="Enable debug output",)
 
-opts, args = parser.parse_args()
+parser.add_option('-t', '--token',
+                  action='store', dest="token",
+                  type='choice',
+                  choices=['iphone', 'android', 'blackberry', 'software',],
+                  default='software',
+	              help="Select token type (iphone, android, blackberry, software)",)
 
+
+opts, args = parser.parse_args()
 
 ## Set debug
 FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
@@ -45,21 +52,16 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
 ## Check
 try:
     if args[0].strip() == "":
-        print "Missing appid. Try with --help"
+        print "Missing username. Try with --help"
         exit(1)
 except IndexError:
-    print "Missing appid. Try with --help"
+    print "Missing username. Try with --help"
     exit(1)
 
 
-## ask & remove
-choice = raw_input("Do you want to delete application %s (Y/N)? " % args[0]).lower()
-
+## Send provisioning request
 try:
-    if choice == "yes" or choice == "y":
-        sp_handler.app_delete(app_id=args[0])
-    exit(1)
+    sp_handler.user_provision(user=args[0], swtoken=opts.token)
 
 except Exception as e:
     print e
-    exit(1)

@@ -1,20 +1,20 @@
 #!/usr/bin/python
 ##
 ## SecurePass CLI tools utilities
-## Application list
+## Radius list
 ##
-## (c) 2013 Giuseppe Paterno' (gpaterno@gpaterno.com)
+## (c) 2014 Giuseppe Paterno' (gpaterno@gpaterno.com)
 ##          GARL Sagl (www.garl.ch)
 ##
 
 
-import utils
-import securepass
+from securepass import utils
+from securepass import securepass
 import logging
 from optparse import OptionParser
 
 
-parser = OptionParser(usage="""List applications in SecurePass
+parser = OptionParser(usage="""List RADIUS devices in SecurePass
 
 %prog [options]""")
 
@@ -29,6 +29,7 @@ parser.add_option('-d', '--details',
 
 parser.add_option('-r', '--realm',
                   action='store', dest="realm",
+                  default=None,
 	              help="Set alternate realm",)
 
 opts, args = parser.parse_args()
@@ -53,16 +54,16 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
 
 ## List all apps
 if opts.detail_flag:
-    print "%-45s %-30s" % ("App ID", "Label")
-    print "=========================================================================="
+    print "%-45s %-30s" % ("RADIUS", "FQDN")
+    print "============================================================================="
 
 try:
-    for app in sp_handler.app_list(realm=opts.realm):
+    for radius in sp_handler.radius_list(realm=opts.realm):
         if opts.detail_flag:
-            app_detail = sp_handler.app_info(app_id=app)
-            print "%-45s %-30s" % (app, app_detail['label'])
+            radius_detail = sp_handler.radius_info(radius=radius)
+            print "%-45s %-30s" % (radius, radius_detail['name'])
         else:
-            print app
+            print radius
 
 
 except Exception as e:
