@@ -489,6 +489,44 @@ class SecurePass(object):
             raise Exception(response['errorMsg'])
 
 
+    ## Disable user
+    def user_disable(self, user=None):
+        """ Disable user
+        """
+
+        request = {}
+
+        if user is not None:
+            request['USERNAME'] = user
+
+        response = self._SendRequest(HTTP_POST, "/api/v1/users/disable", content=request)
+
+        if response['rc'] == 0:
+            return True
+
+        else:
+            raise Exception(response['errorMsg'])
+
+
+    ## Enable user
+    def user_enable(self, user=None):
+        """ Enable a given user
+        """
+
+        request = {}
+
+        if user is not None:
+            request['USERNAME'] = user
+
+        response = self._SendRequest(HTTP_POST, "/api/v1/users/enable", content=request)
+
+        if response['rc'] == 0:
+            return True
+
+        else:
+            raise Exception(response['errorMsg'])
+
+
     ##
     ## SecurePass users' extended attributes (xattr)
     ##

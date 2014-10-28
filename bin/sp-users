@@ -27,6 +27,10 @@ parser.add_option('-d', '--details',
                   action='store_true', dest="detail_flag",
 	              help="Enable debug output",)
 
+parser.add_option('-H', '--noheaders',
+                  action='store_true', dest="noheader_flag",
+	              help="Don't print headers",)
+
 parser.add_option('-r', '--realm',
                   action='store', dest="realm",
 	              help="Set alternate realm",)
@@ -51,15 +55,25 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
                                    endpoint=config['endpoint'])
 
 ## List all users
-if opts.detail_flag:
-    print "%-30s %-30s" % ("User ID", "Name and Surname")
-    print "=========================================================================="
+if opts.detail_flag and not opts.noheader_flag:
+    print "%-35s %-35s %s" % ("User ID", "Name and Surname", "Status")
+    print "================================================================================"
 
 try:
     for user in sp_handler.user_list(realm=opts.realm):
         if opts.detail_flag:
             user_detail = sp_handler.user_info(user=user)
-            print "%-30s %s %s" % (user, user_detail['name'], user_detail['surname'])
+            fullname = "%s %s" % (user_detail['name'], user_detail['surname'])
+
+            ## User status
+            if user_detail['enabled']:
+                status = "Active"
+            else:
+                status = 'Disabled'
+
+            print "%-35s %-35s %s" % (user, fullname, status)
+
+
         else:
             print user
 

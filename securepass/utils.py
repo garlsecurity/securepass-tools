@@ -16,10 +16,10 @@ def loadConfig():
         #conffiles.append(os.path.join(os.path.expanduser("~"), ".securepass"))
 
         ## Virtual Environment handling
-        # VIRTUAL_ENV
-        virtualenv = os.environ.get('VIRTUAL_ENV')
-        if virtualenv is not None:
-            conffiles.append(virtualenv)
+        # VIRTUAL_ENV is not reliable, switching to sys.real_prefix
+        if hasattr(sys, 'real_prefix'):
+            conffiles.append(sys.prefix + "/securepass.conf")
+            conffiles.append(sys.prefix + "/etc/securepass.conf")
 
         conf_found = 0
 

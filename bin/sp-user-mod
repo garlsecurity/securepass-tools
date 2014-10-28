@@ -1,0 +1,82 @@
+#!/usr/bin/python
+##
+## SecurePass CLI tools utilities
+## Modify a given user
+##
+## (c) 2013 Giuseppe Paterno' (gpaterno@gpaterno.com)
+##          GARL Sagl (www.garl.ch)
+##
+
+
+from securepass import utils
+from securepass import securepass
+import logging
+from optparse import OptionParser
+
+
+parser = OptionParser(usage="""Modify user in SecurePass
+
+%prog [options] userid""")
+
+
+parser.add_option('-D', '--debug',
+                  action='store_true', dest="debug_flag",
+	              help="Enable debug output",)
+
+parser.add_option('-d', '--disable',
+                  action='store_true', dest="disable_flag",
+	              help="Disable user",)
+
+parser.add_option('-e', '--enable',
+                  action='store_true', dest="enable_flag",
+	              help="Enable user",)
+
+
+opts, args = parser.parse_args()
+
+
+## Set debug
+FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
+if opts.debug_flag:
+    logging.basicConfig(format=FORMAT, level=logging.DEBUG)
+else:
+    logging.basicConfig(format=FORMAT, level=logging.INFO)
+
+## Check
+try:
+    if args[0].strip() == "":
+        print "Missing username. Try with --help"
+        exit(1)
+
+except IndexError:
+    print "Missing username. Try with --help"
+    exit(1)
+
+## Load config
+config =  utils.loadConfig()
+
+## Config the handler
+sp_handler = securepass.SecurePass(app_id=config['app_id'],
+                                   app_secret=config['app_secret'],
+                                   endpoint=config['endpoint'])
+
+
+
+## Check if we have specified both enable and disable at the same time :)
+if opts.disable_flag and opts.enable_flag:
+    logging.error("Can't specify both enable and disable for the same user")
+    exit(1)
+
+try:
+    ## Disable user
+    if opts.disable_flag:
+        sp_handler.user_disable(args[0].strip())
+
+
+    ## Enable user
+    if opts.enable_flag:
+        sp_handler.user_enable(args[0].strip())
+
+
+except Exception as e:
+    print e
