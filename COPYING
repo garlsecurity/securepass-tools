@@ -1,0 +1,7 @@
+SecurePass tools is released under GPL-2+
+Copyright (C) 2008-2013 Giuseppe Paterno' (gpaterno@gpaterno.com)
+                        GARL Sagl (info@garl.ch)
+
+It contains some lines of codes from the Ganeti Project.
+By the time of copying, the rapi/client.py was under GPLv2
+Copyright (C) 2010, 2011, 2012 Google Inc

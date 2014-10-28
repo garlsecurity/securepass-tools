@@ -10,6 +10,9 @@ https://beta.secure-pass.net/
 Note: For OS X, ensure you have the following while compiling pycurl:
 export PYCURL_SSL_LIBRARY=openssl
 
+This program is released under GPLv2
+See LICENSE file for details
+
 
 Configuration file
 ==================

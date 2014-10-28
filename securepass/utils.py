@@ -1,6 +1,8 @@
 ##
 ## SecurePass CLI tools utilities
 ##
+## This code is released under GPLv2
+##
 ## (c) 2013 Giuseppe Paterno' (gpaterno@gpaterno.com)
 ##          GARL Sagl (www.garl.ch)
 ##

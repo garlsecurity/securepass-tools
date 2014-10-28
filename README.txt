@@ -1,6 +1,9 @@
 The tools for accessing SecurePass from command line.
 Uses the SecurePass public APIs to manage.
 
+This program is released under GPLv2.
+See LICENSE file for details.
+
 More information on the APIs here:
 https://beta.secure-pass.net/
 

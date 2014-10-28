@@ -3,7 +3,10 @@
 ## Generic SecurePass Class to access APIs of Dreamliner
 ## www.secure-pass.net
 ##
+## This code is released under GPLv2
+##
 ## Contains some code from Ganeti project (c) Google Inc.
+## Copyright (C) 2010, 2011, 2012 Google Inc
 ##
 ## This library is under development, please sync from:
 ## https://github.com/gpaterno/securepass-tools
