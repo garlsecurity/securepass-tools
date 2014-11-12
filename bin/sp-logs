@@ -12,8 +12,9 @@ from securepass import utils
 from securepass import securepass
 import logging
 from optparse import OptionParser
+from operator import itemgetter
 
-parser = OptionParser(usage="""Operate on users' extended attributes in SecurePass
+parser = OptionParser(usage="""Show logs for SecurePass
 
 %prog [options] """)
 
@@ -25,6 +26,14 @@ parser.add_option('-D', '--debug',
 parser.add_option('-r', '--realm',
                   action='store', dest="realm",
 	              help="Set alternate realm",)
+
+parser.add_option('-s', '--start',
+                  action='store', dest="start",
+	              help="Start date (format: YYYY-MM-DD",)
+
+parser.add_option('-e', '--end',
+                  action='store', dest="end",
+	              help="End date (format: YYYY-MM-DD",)
 
 parser.add_option('-f', '--full',
                   action='store_true', dest="full_flag",
@@ -54,8 +63,10 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
 
 ## Go for the logs
 try:
-    all_logs = sp_handler.get_logs(realm=opts.realm)['logs']
-    for time in all_logs:
+    all_logs = sp_handler.get_logs(realm=opts.realm, start=opts.start, end=opts.end)['logs']
+
+    ## Sort the return dict for time
+    for time in sorted(all_logs):
         if opts.full_flag:
             print "%-19s %s %s %s %s" % (time, all_logs[time]['message'], all_logs[time]['realm'], all_logs[time]['app'], all_logs[time]['level'])
         else:

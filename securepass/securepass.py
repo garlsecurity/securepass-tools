@@ -150,15 +150,22 @@ class SecurePass(object):
             print response['errorMsg']
 
 
-    def get_logs(self, realm=None):
+    def get_logs(self, realm=None, start=None, end=None):
         """ Get the list of logs
         """
 
         request = {}
-        tmpapp = []
 
         if realm is not None:
             request['REALM'] = realm
+
+        ## Start date
+        if start is not None:
+            request['START'] = start
+
+        ## End date
+        if end is not None:
+            request['END'] = end
 
         response = self._SendRequest(HTTP_POST, "/api/v1/logs/get", content=request)
 
