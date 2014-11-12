@@ -1,0 +1,66 @@
+#!/usr/bin/python
+##
+## SecurePass CLI tools utilities
+## Show and send logs
+##
+## (c) 2013 Giuseppe Paterno' (gpaterno@gpaterno.com)
+##          GARL Sagl (www.garl.ch)
+##
+
+
+from securepass import utils
+from securepass import securepass
+import logging
+from optparse import OptionParser
+
+parser = OptionParser(usage="""Operate on users' extended attributes in SecurePass
+
+%prog [options] """)
+
+
+parser.add_option('-D', '--debug',
+                  action='store_true', dest="debug_flag",
+	              help="Enable debug output",)
+
+parser.add_option('-r', '--realm',
+                  action='store', dest="realm",
+	              help="Set alternate realm",)
+
+parser.add_option('-f', '--full',
+                  action='store_true', dest="full_flag",
+	              help="Enable full output",)
+
+
+opts, args = parser.parse_args()
+
+
+## Set debug
+FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
+if opts.debug_flag:
+    logging.basicConfig(format=FORMAT, level=logging.DEBUG)
+else:
+    logging.basicConfig(format=FORMAT, level=logging.INFO)
+
+
+## Load config
+config =  utils.loadConfig()
+
+## Config the handler
+sp_handler = securepass.SecurePass(app_id=config['app_id'],
+                                   app_secret=config['app_secret'],
+                                   endpoint=config['endpoint'])
+
+## Need to display also log level and application, maybe as optional
+
+## Go for the logs
+try:
+    all_logs = sp_handler.get_logs(realm=opts.realm)['logs']
+    for time in all_logs:
+        if opts.full_flag:
+            print "%-19s %s %s %s %s" % (time, all_logs[time]['message'], all_logs[time]['realm'], all_logs[time]['app'], all_logs[time]['level'])
+        else:
+            print "%-19s %s" % (time, all_logs[time]['message'])
+
+
+except Exception as e:
+    print e

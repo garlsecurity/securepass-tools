@@ -142,12 +142,36 @@ class SecurePass(object):
 
         request = {}
         request['MESSAGE'] = message
-        response = self._SendRequest(HTTP_POST, "/api/v1/log", content=request)
+        response = self._SendRequest(HTTP_POST, "/api/v1/logs/log", content=request)
 
         if response['rc'] == 0:
             print "Log sent"
         else:
             print response['errorMsg']
+
+
+    def get_logs(self, realm=None):
+        """ Get the list of logs
+        """
+
+        request = {}
+        tmpapp = []
+
+        if realm is not None:
+            request['REALM'] = realm
+
+        response = self._SendRequest(HTTP_POST, "/api/v1/logs/get", content=request)
+
+        if response['rc'] == 0:
+
+            del response['rc']
+            del response['errorMsg']
+
+            return response
+
+        else:
+            raise Exception(response['errorMsg'])
+
 
     ##
     ## SecurePass Application handling
