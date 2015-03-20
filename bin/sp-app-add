@@ -46,6 +46,11 @@ parser.add_option('-w', '--write',
                   default=False,
 	              help="Write capabilites (default readonly)",)
 
+parser.add_option('-p', '--privacy',
+                  action='store_false', dest="privacy",
+                  default=False,
+	              help="Privacy flag (default no)",)
+
 
 opts, args = parser.parse_args()
 
@@ -87,7 +92,8 @@ try:
                                 allow_network_ipv6=opts.ipv6,
                                 write=opts.write,
                                 realm=opts.realm,
-                                group=opts.group.strip().lower())
+                                group=opts.group.strip().lower(),
+                                privacy=opts.privacy)
 
     print "Application ID: %s" % result['app_id']
     print "Application Secret: %s" % result['app_secret']

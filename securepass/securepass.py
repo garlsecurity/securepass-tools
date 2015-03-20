@@ -805,3 +805,79 @@ class SecurePass(object):
 
         else:
             raise Exception(response['errorMsg'])
+
+
+    ##
+    ## SecurePass Realm handling xattrs/global policies
+    ##
+
+    def realm_xattr_list(self, realm=None):
+        """ Get Realm' extended attributes
+        """
+
+        request = {}
+
+        if realm is not None:
+            request['REALM'] = realm
+
+        response = self._SendRequest(HTTP_POST, "/api/v1/realms/xattrs/list", content=request)
+
+        if response['rc'] == 0:
+            del response['rc']
+            del response['errorMsg']
+
+            return response
+
+        else:
+            raise Exception(response['errorMsg'])
+
+
+    def realm_xattr_set(self, realm=None, attribute=None, value=None):
+        """ Set Realm' extended attributes
+        """
+
+        request = {}
+
+        if realm is not None:
+            request['REALM'] = realm
+
+        if attribute is not None:
+            request['ATTRIBUTE'] = attribute
+
+        if value is not None:
+            request['VALUE'] = value
+
+        response = self._SendRequest(HTTP_POST, "/api/v1/realms/xattrs/set", content=request)
+
+        if response['rc'] == 0:
+            del response['rc']
+            del response['errorMsg']
+
+            return response
+
+        else:
+            raise Exception(response['errorMsg'])
+
+
+    def realm_xattr_delete(self, realm=None, attribute=None):
+        """ Delete  Realm' extended attribute
+        """
+
+        request = {}
+
+        if realm is not None:
+            request['REALM'] = realm
+
+        if attribute is not None:
+            request['ATTRIBUTE'] = attribute
+
+        response = self._SendRequest(HTTP_POST, "/api/v1/realms/xattrs/delete", content=request)
+
+        if response['rc'] == 0:
+            del response['rc']
+            del response['errorMsg']
+
+            return response
+
+        else:
+            raise Exception(response['errorMsg'])

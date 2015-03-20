@@ -70,8 +70,7 @@ try:
 
     print "IPv4 network ACL...: %s" % myapp['allow_network_ipv4']
     print "IPv6 network ACL...: %s" % myapp['allow_network_ipv6']
-
-
+    print "Privacy mode ......: %s" % myapp['privacy']
 
 
 except Exception as e:
