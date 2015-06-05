@@ -47,7 +47,7 @@ parser.add_option('-w', '--write',
 	              help="Write capabilites (default readonly)",)
 
 parser.add_option('-p', '--privacy',
-                  action='store_false', dest="privacy",
+                  action='store_true', dest="privacy",
                   default=False,
 	              help="Privacy flag (default no)",)
 

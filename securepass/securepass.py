@@ -229,7 +229,7 @@ class SecurePass(object):
 
     # Create application
     def app_add(self, label="", allow_network_ipv4=None, allow_network_ipv6=None,
-                write=False, group=None, realm=None):
+                write=False, privacy=False, group=None, realm=None):
         """ Add an application to SecurePass
         """
 
@@ -237,6 +237,7 @@ class SecurePass(object):
 
         request['LABEL'] = label
         request['WRITE'] = write
+        request['PRIVACY'] = privacy
 
         if allow_network_ipv4 is not None:
             request['ALLOW_NETWORK_IPv4'] = allow_network_ipv4
@@ -289,7 +290,7 @@ class SecurePass(object):
     ## Modify the application
     # Create application
     def app_modify(self, app_id=None, label=None, allow_network_ipv4=None, allow_network_ipv6=None,
-                write=None, group=None, realm=None):
+                write=None, privacy=None, group=None, realm=None):
         """ Modify an application in SecurePass
         """
 
@@ -303,6 +304,9 @@ class SecurePass(object):
 
         if write is not None:
             request['WRITE'] = write
+
+        if privacy is not None:
+            request['PRIVACY'] = privacy
 
         if allow_network_ipv4 is not None:
             request['ALLOW_NETWORK_IPv4'] = allow_network_ipv4
