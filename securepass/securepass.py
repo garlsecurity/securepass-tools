@@ -102,7 +102,7 @@ class SecurePass(object):
           # Send request and wait for response
           try:
             curl.perform()
-          except pycurl.error, err:
+          except pycurl.error as err:
             if err.args[0] in _CURL_SSL_CERT_ERRORS:
               self._logger.error("SSL certificate error %s" % err,
                                   code=err.args[0])
