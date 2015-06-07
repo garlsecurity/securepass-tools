@@ -18,8 +18,8 @@
 import logging
 import pycurl
 import json
-import urllib
-from StringIO import StringIO
+import urllib.request, urllib.parse, urllib.error
+from io import StringIO
 
 HTTP_APP_JSON = "application/json"
 USER_AGENT = "SecurePass CLI"
@@ -96,7 +96,7 @@ class SecurePass(object):
         curl.setopt(pycurl.WRITEFUNCTION, encoded_resp_body.write)
 
         if content is not None:
-            curl.setopt(pycurl.POSTFIELDS, urllib.urlencode(content))
+            curl.setopt(pycurl.POSTFIELDS, urllib.parse.urlencode(content))
 
         try:
           # Send request and wait for response
@@ -145,9 +145,9 @@ class SecurePass(object):
         response = self._SendRequest(HTTP_POST, "/api/v1/logs/log", content=request)
 
         if response['rc'] == 0:
-            print "Log sent"
+            print("Log sent")
         else:
-            print response['errorMsg']
+            print(response['errorMsg'])
 
 
     def get_logs(self, realm=None, start=None, end=None):

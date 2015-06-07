@@ -8,7 +8,7 @@
 ##
 
 import logging
-import ConfigParser
+import configparser
 import os, sys
 
 def loadConfig():
@@ -37,7 +37,7 @@ def loadConfig():
                 logging.error("Unable to find configuration files")
                 sys.exit(1)
 
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(conffiles)
 
         ## Default config
