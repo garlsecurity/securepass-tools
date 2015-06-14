@@ -9,55 +9,58 @@
 
 import logging
 import ConfigParser
-import os, sys
+import os
+import sys
+
 
 def loadConfig():
-        """loadConfig returns cassandra servers"""
+    """loadConfig returns cassandra servers"""
 
-        conffiles = ['/etc/securepass.conf', '/usr/local/etc/securepass.conf', os.getcwd() + '/securepass.conf']
-        #conffiles.append(os.path.join(os.path.expanduser("~"), ".securepass"))
+    conffiles = ['/etc/securepass.conf',
+                 '/usr/local/etc/securepass.conf',
+                 os.getcwd() + '/securepass.conf']
+    #conffiles.append(os.path.join(os.path.expanduser("~"), ".securepass"))
 
-        ## Virtual Environment handling
-        # VIRTUAL_ENV is not reliable, switching to sys.real_prefix
-        if hasattr(sys, 'real_prefix'):
-            conffiles.append(sys.prefix + "/securepass.conf")
-            conffiles.append(sys.prefix + "/etc/securepass.conf")
+    ## Virtual Environment handling
+    # VIRTUAL_ENV is not reliable, switching to sys.real_prefix
+    if hasattr(sys, 'real_prefix'):
+        conffiles.append(sys.prefix + "/securepass.conf")
+        conffiles.append(sys.prefix + "/etc/securepass.conf")
 
-        conf_found = 0
+    conf_found = 0
 
-        ## Get Config File
-        for conf in conffiles:
-                if not os.path.isfile(conf):
-                        logging.debug("Unable to open config file %s!" % conf)
-                else:
-                        logging.debug("Config file found at %s!" % conf)
-                        conf_found = 1
+    ## Get Config File
+    for conf in conffiles:
+        if not os.path.isfile(conf):
+            logging.debug("Unable to open config file %s!" % conf)
+        else:
+            logging.debug("Config file found at %s!" % conf)
+            conf_found = 1
 
-        if conf_found == 0:
-                logging.error("Unable to find configuration files")
-                sys.exit(1)
+    if conf_found == 0:
+        logging.error("Unable to find configuration files")
+        sys.exit(1)
 
-        config = ConfigParser.ConfigParser()
-        config.read(conffiles)
+    config = ConfigParser.ConfigParser()
+    config.read(conffiles)
 
-        ## Default config
-        myconfig = {}
-        myconfig['endpoint'] = "https://beta.secure-pass.net/"
+    ## Default config
+    myconfig = {}
+    myconfig['endpoint'] = "https://beta.secure-pass.net/"
 
-        try:
-                ## Get required configuration
-                myconfig['app_id'] = config.get("default", "app_id")
-                myconfig['app_secret'] = config.get("default", "app_secret")
+    try:
+        ## Get required configuration
+        myconfig['app_id'] = config.get("default", "app_id")
+        myconfig['app_secret'] = config.get("default", "app_secret")
 
-        except:
-                logging.debug("Unable to load config file")
-                return {}
+    except:
+        logging.debug("Unable to load config file")
+        return {}
 
+    ## GEt optional info
+    try:
+        myconfig['endpoint'] = config.get("default", "endpoint")
+        return myconfig
 
-        ## GEt optional info
-        try:
-            myconfig['endpoint'] = config.get("default", "endpoint")
-            return myconfig
-
-        except:
-            return myconfig
+    except:
+        return myconfig
