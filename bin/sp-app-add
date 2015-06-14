@@ -7,6 +7,7 @@
 ##          GARL Sagl (www.garl.ch)
 ##
 
+from __future__ import print_function
 from securepass import utils
 from securepass import securepass
 import logging
@@ -74,10 +75,10 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
 ## Check
 try:
     if args[0].strip() == "":
-        print "Missing label. Try with --help"
+        print("Missing label. Try with --help")
         exit(1)
 except IndexError:
-    print "Missing label. Try with --help"
+    print("Missing label. Try with --help")
     exit(1)
 
 
@@ -95,10 +96,10 @@ try:
                                 group=opts.group.strip().lower(),
                                 privacy=opts.privacy)
 
-    print "Application ID: %s" % result['app_id']
-    print "Application Secret: %s" % result['app_secret']
-    print ""
-    print "Please save the above results, secret will be no longer displayed for security reasons."
+    print("Application ID: %s" % result['app_id'])
+    print("Application Secret: %s" % result['app_secret'])
+    print("")
+    print("Please save the above results, secret will be no longer displayed for security reasons.")
 
 except Exception as e:
-    print e
+    print(e)

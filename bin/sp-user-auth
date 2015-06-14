@@ -9,6 +9,7 @@
 ##
 
 
+from __future__ import print_function
 from securepass import utils
 from securepass import securepass
 import logging
@@ -50,19 +51,19 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
 ## Check user exists
 try:
     if args[0].strip() == "":
-        print "Missing username. Try with --help"
+        print("Missing username. Try with --help")
         exit(1)
 except IndexError:
-    print "Missing username. Try with --help"
+    print("Missing username. Try with --help")
     exit(1)
 
 ## Check password exists
 try:
     if args[1].strip() == "":
-        print "Missing secret. Try with --help"
+        print("Missing secret. Try with --help")
         exit(1)
 except IndexError:
-    print "Missing secret. Try with --help"
+    print("Missing secret. Try with --help")
     exit(1)
 
 
@@ -70,14 +71,14 @@ except IndexError:
 try:
     if sp_handler.user_auth(user=args[0], secret=args[1]):
         if not opts.nooutput_flag:
-            print "Authenticated!"
+            print("Authenticated!")
         exit(0)
     else:
         if not opts.nooutput_flag:
-            print "Access denied!"
+            print("Access denied!")
         exit(1)
 
 except Exception as e:
     if not opts.nooutput_flag:
-        print e
+        print(e)
     exit(1)

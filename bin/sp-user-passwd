@@ -8,6 +8,7 @@
 ##
 
 
+from __future__ import print_function
 from securepass import utils
 from securepass import securepass
 import getpass
@@ -50,10 +51,10 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
 ## Check user exists
 try:
     if args[0].strip() == "":
-        print "Missing username. Try with --help"
+        print("Missing username. Try with --help")
         exit(1)
 except IndexError:
-    print "Missing username. Try with --help"
+    print("Missing username. Try with --help")
     exit(1)
 
 
@@ -61,10 +62,10 @@ except IndexError:
 if opts.disable_flag:
     try:
         sp_handler.user_password_disable(args[0].strip())
-        print "Password removed."
+        print("Password removed.")
         exit(0)
     except Exception as e:
-        print e
+        print(e)
         exit(1)
 
 ## if we ask for change password
@@ -76,13 +77,13 @@ else:
     if password == verifypw:
         try:
             sp_handler.user_password_change(user=args[0].strip(), password=password)
-            print "Password changed."
+            print("Password changed.")
             exit(1)
         except Exception as e:
-            print e
+            print(e)
             exit(1)
 
     else:
-        print "Passwords don't match!"
+        print("Passwords don't match!")
         exit(1)
 

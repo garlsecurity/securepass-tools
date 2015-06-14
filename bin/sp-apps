@@ -8,6 +8,7 @@
 ##
 
 
+from __future__ import print_function
 from securepass import utils
 from securepass import securepass
 import logging
@@ -53,20 +54,20 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
 
 ## List all apps
 if opts.detail_flag:
-    print "%-45s %-30s" % ("App ID", "Label")
-    print "=========================================================================="
+    print("%-45s %-30s" % ("App ID", "Label"))
+    print("==========================================================================")
 
 try:
     for app in sp_handler.app_list(realm=opts.realm):
         if opts.detail_flag:
             app_detail = sp_handler.app_info(app_id=app)
-            print "%-45s %-30s" % (app, app_detail['label'])
+            print("%-45s %-30s" % (app, app_detail['label']))
         else:
-            print app
+            print(app)
 
 
 except Exception as e:
-    print e
+    print(e)
 
 
 

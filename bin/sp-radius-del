@@ -8,6 +8,7 @@
 ##
 
 
+from __future__ import print_function
 from securepass import utils
 from securepass import securepass
 import logging
@@ -45,15 +46,15 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
 ## Check
 try:
     if args[0].strip() == "":
-        print "Missing RADIUS ip address. Try with --help"
+        print("Missing RADIUS ip address. Try with --help")
         exit(1)
 except IndexError:
-    print "Missing RADIUS ip address. Try with --help"
+    print("Missing RADIUS ip address. Try with --help")
     exit(1)
 
 
 ## ask & remove
-choice = raw_input("Do you want to delete RADIUS %s (Y/N)? " % args[0]).lower()
+choice = input("Do you want to delete RADIUS %s (Y/N)? " % args[0]).lower()
 
 try:
     if choice == "yes" or choice == "y":
@@ -64,5 +65,5 @@ try:
         exit(1)
 
 except Exception as e:
-    print e
+    print(e)
     exit(1)

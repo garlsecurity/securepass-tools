@@ -8,6 +8,7 @@
 ##
 
 
+from __future__ import print_function
 from securepass import utils
 from securepass import securepass
 import logging
@@ -45,10 +46,10 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
 ## Check
 try:
     if args[0].strip() == "":
-        print "Missing appid. Try with --help"
+        print("Missing appid. Try with --help")
         exit(1)
 except IndexError:
-    print "Missing appid. Try with --help"
+    print("Missing appid. Try with --help")
     exit(1)
 
 
@@ -56,22 +57,22 @@ except IndexError:
 try:
     myapp = sp_handler.app_info(app_id=args[0])
 
-    print "Application details for %s" % args[0]
-    print "================================================\n"
-    print "Label..............: %s" % myapp['label']
-    print "Realm..............: %s" % myapp['realm']
-    print "Restrict to group..: %s" % myapp['group']
-    print "Permissions........:",
+    print("Application details for %s" % args[0])
+    print("================================================\n")
+    print("Label..............: %s" % myapp['label'])
+    print("Realm..............: %s" % myapp['realm'])
+    print("Restrict to group..: %s" % myapp['group'])
+    print("Permissions........:", end=' ')
 
     if myapp['write']:
-        print "read/write"
+        print("read/write")
     else:
-        print "read-only"
+        print("read-only")
 
-    print "IPv4 network ACL...: %s" % myapp['allow_network_ipv4']
-    print "IPv6 network ACL...: %s" % myapp['allow_network_ipv6']
-    print "Privacy mode ......: %s" % myapp['privacy']
+    print("IPv4 network ACL...: %s" % myapp['allow_network_ipv4'])
+    print("IPv6 network ACL...: %s" % myapp['allow_network_ipv6'])
+    print("Privacy mode ......: %s" % myapp['privacy'])
 
 
 except Exception as e:
-    print e
+    print(e)

@@ -7,6 +7,7 @@
 ##          GARL Sagl (www.garl.ch)
 ##
 
+from __future__ import print_function
 from securepass import utils
 from securepass import securepass
 import logging
@@ -80,27 +81,27 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
 ## Check
 try:
     if args[0].strip() == "":
-        print "Missing username. Try with --help"
+        print("Missing username. Try with --help")
         exit(1)
 except IndexError:
-    print "Missing username. Try with --help"
+    print("Missing username. Try with --help")
     exit(1)
 
 ## Name
 if opts.name is None:
-    print "Missing name. Try with --help"
+    print("Missing name. Try with --help")
     exit(1)
 
 if opts.surname is None:
-    print "Missing surname. Try with --help"
+    print("Missing surname. Try with --help")
     exit(1)
 
 if opts.email is None:
-    print "Missing e-mail address. Try with --help"
+    print("Missing e-mail address. Try with --help")
     exit(1)
 
 if opts.mobile is None:
-    print "Missing mobile number. Try with --help"
+    print("Missing mobile number. Try with --help")
     exit(1)
 
 
@@ -118,4 +119,4 @@ try:
                         manager=opts.manager)
 
 except Exception as e:
-    print e
+    print(e)

@@ -7,7 +7,7 @@
 ##          GARL Sagl (www.garl.ch)
 ##
 
-
+from __future__ import print_function
 from securepass import utils
 from securepass import securepass
 import logging
@@ -45,11 +45,11 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
 ## Check username
 try:
     if args[0].strip() == "":
-        print "Missing username. Try with --help"
+        print("Missing username. Try with --help")
         exit(1)
 
 except IndexError:
-    print "Missing username. Try with --help"
+    print("Missing username. Try with --help")
     exit(1)
 
 ## Check operation
@@ -58,11 +58,11 @@ try:
        args[1].strip().lower() != "set" and \
        args[1].strip().lower() != "get" and  \
        args[1].strip().lower() != "delete":
-            print "Operation not valid. Try with --help"
+            print("Operation not valid. Try with --help")
             exit(1)
 
 except IndexError:
-    print "Operations not specified. Try with --help"
+    print("Operations not specified. Try with --help")
     exit(1)
 
 
@@ -74,15 +74,15 @@ if args[1].strip().lower() == "list":
     try:
         attributes = sp_handler.users_xattr_list(user=args[0])
 
-        print "Extended attributes details for %s" % args[0]
-        print "================================================\n"
+        print("Extended attributes details for %s" % args[0])
+        print("================================================\n")
 
         for attribute in attributes:
-            print "%s: %s" % (attribute, attributes[attribute])
+            print("%s: %s" % (attribute, attributes[attribute]))
 
 
     except Exception as e:
-        print e
+        print(e)
 
 
 ## Set values
@@ -92,14 +92,14 @@ if args[1].strip().lower() == "set":
         ## Set value
         sp_handler.users_xattr_set(user=args[0], attribute=args[2], value=args[3])
 
-        print "Attribute %s set for user %s" % (args[2], args[0])
+        print("Attribute %s set for user %s" % (args[2], args[0]))
 
     except IndexError:
-            print "set <attribute> <value>"
+            print("set <attribute> <value>")
             exit(1)
 
     except Exception as e:
-        print e
+        print(e)
 
 
 ## Delete
@@ -109,11 +109,11 @@ if args[1].strip().lower() == "delete":
         ## Set value
         sp_handler.users_xattr_delete(user=args[0], attribute=args[2])
 
-        print "Attribute %s deleted for user %s" % (args[2], args[0])
+        print("Attribute %s deleted for user %s" % (args[2], args[0]))
 
     except IndexError:
-        print "delete <attribute>"
+        print("delete <attribute>")
         exit(1)
 
     except Exception as e:
-        print e
+        print(e)

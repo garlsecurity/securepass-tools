@@ -8,6 +8,7 @@
 ##
 
 
+from __future__ import print_function
 from securepass import utils
 from securepass import securepass
 import logging
@@ -56,8 +57,8 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
 
 ## List all users
 if opts.detail_flag and not opts.noheader_flag:
-    print "%-35s %-35s %s" % ("User ID", "Name and Surname", "Status")
-    print "================================================================================"
+    print("%-35s %-35s %s" % ("User ID", "Name and Surname", "Status"))
+    print("================================================================================")
 
 try:
     for user in sp_handler.user_list(realm=opts.realm):
@@ -71,15 +72,15 @@ try:
             else:
                 status = 'Disabled'
 
-            print "%-35s %-35s %s" % (user, fullname, status)
+            print("%-35s %-35s %s" % (user, fullname, status))
 
 
         else:
-            print user
+            print(user)
 
 
 except Exception as e:
-    print e
+    print(e)
 
 
 

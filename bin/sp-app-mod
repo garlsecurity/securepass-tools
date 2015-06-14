@@ -7,6 +7,7 @@
 ##          GARL Sagl (www.garl.ch)
 ##
 
+from __future__ import print_function
 from securepass import utils
 from securepass import securepass
 import logging
@@ -74,10 +75,10 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
 ## Check
 try:
     if args[0].strip() == "":
-        print "Missing appid. Try with --help"
+        print("Missing appid. Try with --help")
         exit(1)
 except IndexError:
-    print "Missing appid. Try with --help"
+    print("Missing appid. Try with --help")
     exit(1)
 
 
@@ -118,5 +119,5 @@ try:
     exit(0)
 
 except Exception as e:
-    print e
+    print(e)
     exit(1)

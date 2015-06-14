@@ -8,6 +8,7 @@
 ##
 
 
+from __future__ import print_function
 from securepass import utils
 from securepass import securepass
 import logging
@@ -45,10 +46,10 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
 ## Check
 try:
     if args[0].strip() == "":
-        print "Missing username. Try with --help"
+        print("Missing username. Try with --help")
         exit(1)
 except IndexError:
-    print "Missing username. Try with --help"
+    print("Missing username. Try with --help")
     exit(1)
 
 
@@ -56,30 +57,30 @@ except IndexError:
 try:
     myuser = sp_handler.user_info(user=args[0])
 
-    print "User details for %s" % args[0]
-    print "================================================\n"
-    print "Name.............: %s" % myuser['name']
-    print "Surname..........: %s" % myuser['surname']
-    print "E-mail...........: %s" % myuser['email']
-    print "Mobile nr........: %s" % myuser['mobile']
-    print "National ID......: %s" % myuser['nin']
-    print "RFID tag.........: %s" % myuser['rfid']
-    print "Token type.......: %s" % myuser['token']
-    print "User status......:",
+    print("User details for %s" % args[0])
+    print("================================================\n")
+    print("Name.............: %s" % myuser['name'])
+    print("Surname..........: %s" % myuser['surname'])
+    print("E-mail...........: %s" % myuser['email'])
+    print("Mobile nr........: %s" % myuser['mobile'])
+    print("National ID......: %s" % myuser['nin'])
+    print("RFID tag.........: %s" % myuser['rfid'])
+    print("Token type.......: %s" % myuser['token'])
+    print("User status......:", end=' ')
 
     if myuser['enabled']:
-        print "Enabled"
+        print("Enabled")
     else:
-        print "Disabled"
+        print("Disabled")
 
 
-    print "Password status..:",
+    print("Password status..:", end=' ')
 
     if myuser['password']:
-        print "Enabled"
+        print("Enabled")
     else:
-        print "Disabled"
+        print("Disabled")
 
 
 except Exception as e:
-    print e
+    print(e)

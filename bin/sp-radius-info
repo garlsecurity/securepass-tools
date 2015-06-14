@@ -8,6 +8,7 @@
 ##
 
 
+from __future__ import print_function
 from securepass import utils
 from securepass import securepass
 import logging
@@ -45,10 +46,10 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
 ## Check
 try:
     if args[0].strip() == "":
-        print "Missing RADIUS ip address. Try with --help"
+        print("Missing RADIUS ip address. Try with --help")
         exit(1)
 except IndexError:
-    print "Missing RADIUS ip address. Try with --help"
+    print("Missing RADIUS ip address. Try with --help")
     exit(1)
 
 
@@ -56,19 +57,19 @@ except IndexError:
 try:
     radius = sp_handler.radius_info(radius=args[0])
 
-    print "RADIUS details for %s" % args[0]
-    print "================================================\n"
-    print "FQDN/Name..........: %s" % radius['name']
-    print "Secret.............: %s" % radius['secret']
-    print "Realm..............: %s" % radius['realm']
-    print "Restrict to group..: %s" % radius['group']
-    print "RFID tag...........:",
+    print("RADIUS details for %s" % args[0])
+    print("================================================\n")
+    print("FQDN/Name..........: %s" % radius['name'])
+    print("Secret.............: %s" % radius['secret'])
+    print("Realm..............: %s" % radius['realm'])
+    print("Restrict to group..: %s" % radius['group'])
+    print("RFID tag...........:", end=' ')
 
     if radius['rfid']:
-        print "enabled"
+        print("enabled")
     else:
-        print "disabled"
+        print("disabled")
 
 
 except Exception as e:
-    print e
+    print(e)

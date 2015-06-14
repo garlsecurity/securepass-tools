@@ -8,6 +8,7 @@
 ##
 
 
+from __future__ import print_function
 from securepass import utils
 from securepass import securepass
 import logging
@@ -67,15 +68,15 @@ try:
 
     ## print csv header
     if opts.full_flag:
-        print "timestamp;uuid;message;realm;app;level"
+        print("timestamp;uuid;message;realm;app;level")
 
     ## Sort the return dict for time
     for time in sorted(all_logs):
         if opts.full_flag:
-            print "%s;%s;%s;%s;%s;%s" % (time, all_logs[time]['uuid'], all_logs[time]['message'], all_logs[time]['realm'], all_logs[time]['app'], all_logs[time]['level'])
+            print("%s;%s;%s;%s;%s;%s" % (time, all_logs[time]['uuid'], all_logs[time]['message'], all_logs[time]['realm'], all_logs[time]['app'], all_logs[time]['level']))
         else:
-            print "%-19s %s" % (time, all_logs[time]['message'])
+            print("%-19s %s" % (time, all_logs[time]['message']))
 
 
 except Exception as e:
-    print e
+    print(e)

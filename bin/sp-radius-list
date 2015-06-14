@@ -8,6 +8,7 @@
 ##
 
 
+from __future__ import print_function
 from securepass import utils
 from securepass import securepass
 import logging
@@ -54,20 +55,20 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
 
 ## List all apps
 if opts.detail_flag:
-    print "%-45s %-30s" % ("RADIUS", "FQDN")
-    print "============================================================================="
+    print("%-45s %-30s" % ("RADIUS", "FQDN"))
+    print("=============================================================================")
 
 try:
     for radius in sp_handler.radius_list(realm=opts.realm):
         if opts.detail_flag:
             radius_detail = sp_handler.radius_info(radius=radius)
-            print "%-45s %-30s" % (radius, radius_detail['name'])
+            print("%-45s %-30s" % (radius, radius_detail['name']))
         else:
-            print radius
+            print(radius)
 
 
 except Exception as e:
-    print e
+    print(e)
 
 
 
