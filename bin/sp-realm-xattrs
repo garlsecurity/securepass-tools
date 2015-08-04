@@ -72,7 +72,7 @@ if args[1].strip().lower() == "list":
 
     ## Display info
     try:
-        attributes = sp_handler.realms_xattr_list(user=args[0])
+        attributes = sp_handler.realms_xattr_list(realm=args[0])
 
         print "Extended attributes details for %s" % args[0]
         print "================================================\n"
