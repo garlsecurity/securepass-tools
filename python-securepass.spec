@@ -1,5 +1,5 @@
 Name:           python-securepass
-Version:        0.3.6
+Version:        0.4
 Release:        1%{?dist}
 Summary:        SecurePass Python tools
 
@@ -10,7 +10,7 @@ Source0:      	https://github.com/garlsecurity/securepass-tools/archive/%{versio
 
 BuildArch: 	noarch
 BuildRequires:  python-pycurl
-BuildRoot: 	%{_tmppath}/%{name}-root
+BuildRoot: 	%{_tmppath}/%{name}-%{version}-%{release}-root
 Requires:       python-pycurl
 
 %description
@@ -38,8 +38,18 @@ Uses the SecurePass public APIs to manage.
 %defattr(-,root,root,-)
 %{python_sitelib}/*
 %{_usr}/bin/*
-%doc README.txt README.md LICENSE securepass.conf.example
+%doc README.txt README.md securepass.conf.example contrib/extract_ssh_key.sh 
+
+%if 0%{?rhel} <= 6
+   %doc LICENSE 
+%else 
+   %license LICENSE L
+%endif
 
 %changelog
-* Fri Nov 14 2014 Giuseppe Paterno' (gpaterno@garl.ch)
+* Tue Aug 25 2015 Giuseppe Paterno' <gpaterno@gpaterno.com> 0.4-1
+- Support for extended attributes in users and realms
+- Support for privacy bit in the APIs
+
+* Fri Nov 14 2014 Giuseppe Paterno' <gpaterno@gpaterno.com> 0.3.6-1 
 - Initial RPM spec for securepass-tools

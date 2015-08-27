@@ -53,3 +53,4 @@ test_sp.py
 securepass.conf
 dist/*
 securepass.egg-info/*
+active.sh
