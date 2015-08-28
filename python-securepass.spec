@@ -1,5 +1,5 @@
 Name:           python-securepass
-Version:        0.4
+Version:        0.4.1
 Release:        1%{?dist}
 Summary:        SecurePass Python tools
 
@@ -43,10 +43,13 @@ Uses the SecurePass public APIs to manage.
 %if 0%{?rhel} <= 6
    %doc LICENSE 
 %else 
-   %license LICENSE L
+   %license LICENSE
 %endif
 
 %changelog
+* Fri Aug 28 2015 Giuseppe Paterno' <gpaterno@gpaterno.com> 0.4.1-1
+- Added SSH key helper
+
 * Tue Aug 25 2015 Giuseppe Paterno' <gpaterno@gpaterno.com> 0.4-1
 - Support for extended attributes in users and realms
 - Support for privacy bit in the APIs

@@ -57,10 +57,24 @@ def loadConfig():
         logging.debug("Unable to load config file")
         return {}
 
-    ## GEt optional info
+    ## Get endpoint, if specified
     try:
         myconfig['endpoint'] = config.get("default", "endpoint")
-        return myconfig
-
     except:
-        return myconfig
+        pass
+
+    # Get realm, if specified
+    try:
+        myconfig['realm'] = config.get("nss", "realm")
+    except:
+        pass
+
+    # SSH behaviour
+    try:
+        myconfig['root'] = config.get("ssh", "root")
+    except:
+        pass
+
+
+    # Return array with config
+    return myconfig

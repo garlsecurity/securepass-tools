@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+# 0.4.1
+ * SSH key helper for OpenSSH
+
+# 0.4.0
+ * Updated RPM spec
+ * sync with nss-ldap versioning
+ * Improved configuration load
 
 # 0.3.7
  * Privacy bit
