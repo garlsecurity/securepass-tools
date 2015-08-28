@@ -3,6 +3,7 @@ CHANGELOG
 
 # 0.4.1
  * SSH key helper for OpenSSH
+ * Initial SP config file creator/updater
 
 # 0.4.0
  * Updated RPM spec

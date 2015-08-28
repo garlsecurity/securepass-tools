@@ -1,0 +1,78 @@
+#!/usr/bin/python
+##
+## SecurePass CLI tools utilities
+## Create/update SecurePass configuration file
+## to be used in cloudinit, kickstart or similar technologies
+##
+## (c) 2013 Giuseppe Paterno' (gpaterno@gpaterno.com)
+##          GARL Sagl (www.garl.ch)
+##
+
+
+from securepass import utils
+from securepass import securepass
+import logging
+from optparse import OptionParser
+import ConfigParser
+
+
+parser = OptionParser(usage="""Create/update SecurePass configuration file
+
+%prog [options]""")
+
+
+parser.add_option('-D', '--debug',
+                  action='store_true', dest="debug_flag",
+	              help="Enable debug output",)
+
+parser.add_option('-c', '--config',
+                  default='/etc/securepass.conf',
+                  action='store', dest="configfile",
+	              help="Config file",)
+
+parser.add_option('-i', '--appid',
+                  default=None,
+                  action='store', dest="appid",
+	              help="Application ID",)
+
+parser.add_option('-e', '--endpoint',
+                  default='https://beta.secure-pass.net',
+                  action='store', dest="endpoint",
+	              help="Endpoint URL",)
+
+parser.add_option('-s', '--appsecret',
+                  default=None,
+                  action='store', dest="appsecret",
+	              help="Application Secret",)
+
+parser.add_option('-r', '--realm',
+                  default=None,
+                  action='store', dest="realm",
+	              help="Default Domain/Realm",)
+
+
+opts, args = parser.parse_args()
+
+
+## Set debug
+FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
+if opts.debug_flag:
+    logging.basicConfig(format=FORMAT, level=logging.DEBUG)
+else:
+    logging.basicConfig(format=FORMAT, level=logging.INFO)
+
+
+## Open the file
+config = ConfigParser.ConfigParser()
+logging.debug("Config file is: %s" % opts.configfile)
+
+config_file = file(opts.configfile, 'a+')
+config.read(config_file)
+
+if opts.appid is not None:
+    config.set("default", "app_id", opts.appid)
+
+config.write(config_file)
+
+
+

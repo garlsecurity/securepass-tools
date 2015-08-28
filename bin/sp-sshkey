@@ -24,10 +24,17 @@ def get_user_key(handler, username):
     try:
         attributes = handler.users_xattr_list(user=username)
         if 'sshkey' in attributes:
-            print attributes['sshkey']
+            return attributes['sshkey']
 
     except Exception as e:
-        pass
+        return None
+
+# Autoappend the realm
+def expand_user(user):
+   if not '@' in user and 'realm' in config:
+      return "%s@%s" % (user, config['realm'])
+   else:
+      return user
 
 
 parser = OptionParser(usage="""List users in SecurePass
@@ -74,24 +81,24 @@ except IndexError:
     exit(1)
 
 ## Check if we have a domain, otherwise append
-if not '@' in args[0] and 'realm' in config:
-   username = "%s@%s" % (args[0], config['realm'])
-else:
-   username = args[0]
+username = expand_user(args[0])
 
-if opts.debug_flag:
-    logging.debug("Username is: %s" % username)
+logging.debug("Username is: %s" % username)
 
 # Special case for root, otherwise print ssh key
 if username.split("@")[0] == 'root' and 'root' in config:
-   if opts.debug_flag:
-       logging.debug("root request detected, cycling for users")
+   logging.debug("root request detected, cycling for users")
 
    for user in config['root'].split(','):
-       get_user_key(sp_handler, user)
+       key = get_user_key(sp_handler, expand_user(user))
+       if key is not None:
+          print key
 
 else:
-   get_user_key(sp_handler, username)
+   key = get_user_key(sp_handler, username)
+   if key is not None:
+      print key
+
 
 
 
