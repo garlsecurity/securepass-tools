@@ -9,11 +9,10 @@
 ##
 
 
-from securepass import utils
-from securepass import securepass
 import logging
 from optparse import OptionParser
 import ConfigParser
+import sys, os
 
 
 parser = OptionParser(usage="""Create/update SecurePass configuration file
@@ -50,6 +49,11 @@ parser.add_option('-r', '--realm',
                   action='store', dest="realm",
 	              help="Default Domain/Realm",)
 
+parser.add_option('--root',
+                  default=None,
+                  action='store', dest="root",
+	              help="Coma separated list of allowed root users",)
+
 
 opts, args = parser.parse_args()
 
@@ -63,16 +67,43 @@ else:
 
 
 ## Open the file
-config = ConfigParser.ConfigParser()
+config = ConfigParser.RawConfigParser()
 logging.debug("Config file is: %s" % opts.configfile)
 
-config_file = file(opts.configfile, 'a+')
-config.read(config_file)
+# Open and update
+config.read(opts.configfile)
 
 if opts.appid is not None:
-    config.set("default", "app_id", opts.appid)
+    config.set("DEFAULT", "app_id", opts.appid)
 
-config.write(config_file)
+if opts.appsecret is not None:
+    config.set("DEFAULT", "app_secret", opts.appsecret)
 
+# Endpoint
+config.set("DEFAULT", "endpoint", opts.endpoint)
 
+# Set the realm
+if opts.realm is not None:
+   # It might be that the section is just not there
+   # if not, let's create and populate defaults
+   if not config.has_section("nss"):
+       config.add_section("nss")
+       config.set("nss", "default_gid", 100)
+       config.set("nss", "default_home", '"/home"')
+       config.set("nss", "default_shell", '"/bin/bash"')
+
+   config.set("nss", "realm", opts.realm)
+
+# Set root users
+if opts.root is not None:
+    # Create the section if is not there
+    if not config.has_section("ssh"):
+        config.add_section("ssh")
+
+    config.set("ssh", "root", opts.root)
+
+# Final write
+with open(opts.configfile, 'w') as inifile:
+   config.write(inifile)
+    
 

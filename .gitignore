@@ -49,6 +49,11 @@ Thumbs.db
 .idea/*
 test_sp.py
 
+## Vagrant
+Vagrantfile
+.vagrant*
+contrib/vagrant.yml
+
 ## Ingnore conf
 securepass.conf
 dist/*
