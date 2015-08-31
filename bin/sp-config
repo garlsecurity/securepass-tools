@@ -13,6 +13,7 @@ import logging
 from optparse import OptionParser
 import ConfigParser
 import sys, os
+import fileinput
 
 
 parser = OptionParser(usage="""Create/update SecurePass configuration file
@@ -47,7 +48,7 @@ parser.add_option('-s', '--appsecret',
 parser.add_option('-r', '--realm',
                   default=None,
                   action='store', dest="realm",
-	              help="Default Domain/Realm",)
+	              help="Default Domain/Realm (and allow NSS login)",)
 
 parser.add_option('--root',
                   default=None,
@@ -65,10 +66,24 @@ if opts.debug_flag:
 else:
     logging.basicConfig(format=FORMAT, level=logging.INFO)
 
+# Fixup of the DEFAULT
+def replace_word(infile,old_word,new_word):
+    if not os.path.isfile(infile):
+        print ("Error on replace_word, not a regular file: "+infile)
+        sys.exit(1)
+
+    f1=open(infile,'r').read()
+    f2=open(infile,'w')
+    m=f1.replace(old_word,new_word)
+    f2.write(m)
 
 ## Open the file
 config = ConfigParser.RawConfigParser()
 logging.debug("Config file is: %s" % opts.configfile)
+
+# Before updating, we need to setup default ot DEFAULT :(
+# blaming configparser here :(
+replace_word(opts.configfile, "[default]", "[DEFAULT]")
 
 # Open and update
 config.read(opts.configfile)
@@ -88,8 +103,14 @@ if opts.realm is not None:
    # if not, let's create and populate defaults
    if not config.has_section("nss"):
        config.add_section("nss")
+
+   if not config.has_option("nss", "default_gid"):
        config.set("nss", "default_gid", 100)
+
+   if not config.has_option("nss", "default_home"):
        config.set("nss", "default_home", '"/home"')
+
+   if not config.has_option("nss", "default_shell"):
        config.set("nss", "default_shell", '"/bin/bash"')
 
    config.set("nss", "realm", opts.realm)
@@ -107,3 +128,5 @@ with open(opts.configfile, 'w') as inifile:
    config.write(inifile)
     
 
+# Fixup for [DEFAULT] in uppercase
+replace_word(opts.configfile, "[DEFAULT]", "[default]")
