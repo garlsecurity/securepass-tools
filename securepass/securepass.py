@@ -1,4 +1,3 @@
-#!/usr/bin/python
 ##
 ## Generic SecurePass Class to access APIs of Dreamliner
 ## www.secure-pass.net

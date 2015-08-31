@@ -6,17 +6,17 @@ Summary:        SecurePass Python tools
 Group:          Development/Libraries
 License:        GPLv2+
 URL:            https://github.com/garlsecurity/securepass-tools
-Source0:      	https://github.com/garlsecurity/securepass-tools/archive/%{version}/securepass-tools-v%{version}.tar.gz  
+Source0:        https://github.com/garlsecurity/securepass-tools/archive/v%{version}/securepass-tools-v%{version}.tar.gz  
 
-BuildArch: 	noarch
+BuildArch:      noarch
 BuildRequires:  python-pycurl
-BuildRoot: 	%{_tmppath}/%{name}-%{version}-%{release}-root
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 Requires:       python-pycurl
 
 %description
-The tools and libraries for accessing SecurePass platform.
+The tools and python libraries for accessing SecurePass platform.
 
-Uses the SecurePass public APIs to manage.
+It uses the SecurePass public APIs.
 
 %prep
 %setup -qn securepass-tools-%{version}
