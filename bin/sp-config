@@ -9,124 +9,125 @@
 ##
 
 
+from argparse import ArgumentParser
 import logging
-from optparse import OptionParser
 import ConfigParser
-import sys, os
-import fileinput
+import os
+import sys
 
 
-parser = OptionParser(usage="""Create/update SecurePass configuration file
-
-%prog [options]""")
-
-
-parser.add_option('-D', '--debug',
-                  action='store_true', dest="debug_flag",
-	              help="Enable debug output",)
-
-parser.add_option('-c', '--config',
-                  default='/etc/securepass.conf',
-                  action='store', dest="configfile",
-	              help="Config file",)
-
-parser.add_option('-i', '--appid',
-                  default=None,
-                  action='store', dest="appid",
-	              help="Application ID",)
-
-parser.add_option('-e', '--endpoint',
-                  default='https://beta.secure-pass.net',
-                  action='store', dest="endpoint",
-	              help="Endpoint URL",)
-
-parser.add_option('-s', '--appsecret',
-                  default=None,
-                  action='store', dest="appsecret",
-	              help="Application Secret",)
-
-parser.add_option('-r', '--realm',
-                  default=None,
-                  action='store', dest="realm",
-	              help="Default Domain/Realm (and allow NSS login)",)
-
-parser.add_option('--root',
-                  default=None,
-                  action='store', dest="root",
-	              help="Coma separated list of allowed root users",)
+parser = ArgumentParser(
+    description="Create or update SecurePass configuration file",
+    prog="sp-config",
+)
 
 
-opts, args = parser.parse_args()
+parser.add_argument('-D', '--debug',
+                    action='store_true', dest="debug_flag",
+                    help="Enable debug output",)
+
+parser.add_argument('-c', '--config',
+                    default='/etc/securepass.conf',
+                    action='store', dest="configfile",
+                    help="Config file",)
+
+parser.add_argument('-i', '--appid',
+                    default=None,
+                    action='store', dest="appid",
+                    help="Application ID",)
+
+parser.add_argument('-e', '--endpoint',
+                    default='https://beta.secure-pass.net',
+                    action='store', dest="endpoint",
+                    help="Endpoint URL",)
+
+parser.add_argument('-s', '--appsecret',
+                    default=None,
+                    action='store', dest="appsecret",
+                    help="Application Secret",)
+
+parser.add_argument('-r', '--realm',
+                    default=None,
+                    action='store', dest="realm",
+                    help="Default Domain/Realm (and allow NSS login)",)
+
+parser.add_argument('--root',
+                    default=None,
+                    action='store', dest="root",
+                    help="Coma separated list of allowed root users",)
+
+
+values = parser.parse_args()
 
 
 ## Set debug
 FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
-if opts.debug_flag:
+if values.debug_flag:
     logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 else:
     logging.basicConfig(format=FORMAT, level=logging.INFO)
 
+
 # Fixup of the DEFAULT
-def replace_word(infile,old_word,new_word):
+def replace_word(infile, old_word, new_word):
     if not os.path.isfile(infile):
         print ("Error on replace_word, not a regular file: "+infile)
         sys.exit(1)
 
-    f1=open(infile,'r').read()
-    f2=open(infile,'w')
-    m=f1.replace(old_word,new_word)
+    f1 = open(infile, 'r').read()
+    f2 = open(infile, 'w')
+    m = f1.replace(old_word, new_word)
     f2.write(m)
 
 ## Open the file
 config = ConfigParser.RawConfigParser()
-logging.debug("Config file is: %s" % opts.configfile)
+logging.debug("Config file is: %s" % values.configfile)
 
 # Before updating, we need to setup default ot DEFAULT :(
 # blaming configparser here :(
-replace_word(opts.configfile, "[default]", "[DEFAULT]")
+replace_word(values.configfile, "[default]", "[DEFAULT]")
 
 # Open and update
-config.read(opts.configfile)
+config.read(values.configfile)
 
-if opts.appid is not None:
-    config.set("DEFAULT", "app_id", opts.appid)
+if values.appid is not None:
+    config.set("DEFAULT", "app_id", values.appid)
 
-if opts.appsecret is not None:
-    config.set("DEFAULT", "app_secret", opts.appsecret)
+if values.appsecret is not None:
+    config.set("DEFAULT", "app_secret", values.appsecret)
 
 # Endpoint
-config.set("DEFAULT", "endpoint", opts.endpoint)
+config.set("DEFAULT", "endpoint", values.endpoint)
 
 # Set the realm
-if opts.realm is not None:
+if values.realm is not None:
    # It might be that the section is just not there
    # if not, let's create and populate defaults
-   if not config.has_section("nss"):
-       config.add_section("nss")
+    if not config.has_section("nss"):
+        config.add_section("nss")
 
-   if not config.has_option("nss", "default_gid"):
-       config.set("nss", "default_gid", 100)
+    if not config.has_option("nss", "default_gid"):
+        config.set("nss", "default_gid", 100)
 
-   if not config.has_option("nss", "default_home"):
-       config.set("nss", "default_home", '"/home"')
+    if not config.has_option("nss", "default_home"):
+        config.set("nss", "default_home", '"/home"')
 
-   if not config.has_option("nss", "default_shell"):
-       config.set("nss", "default_shell", '"/bin/bash"')
+    if not config.has_option("nss", "default_shell"):
+        config.set("nss", "default_shell", '"/bin/bash"')
 
-   config.set("nss", "realm", opts.realm)
+    config.set("nss", "realm", values.realm)
 
 # Set root users
-if opts.root is not None:
+if values.root is not None:
     # Create the section if is not there
     if not config.has_section("ssh"):
         config.add_section("ssh")
 
-    config.set("ssh", "root", opts.root)
+    config.set("ssh", "root", values.root)
 
 # Final write
-with open(opts.configfile, 'w') as inifile:
-   config.write(inifile)
-    
+with open(values.configfile, 'w') as inifile:
+    config.write(inifile)
 
 # Fixup for [DEFAULT] in uppercase
-replace_word(opts.configfile, "[DEFAULT]", "[default]")
+replace_word(values.configfile, "[DEFAULT]", "[default]")

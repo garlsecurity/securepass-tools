@@ -8,55 +8,46 @@
 ##
 
 
+from argparse import ArgumentParser
 from securepass import utils
 from securepass import securepass
 import logging
-from optparse import OptionParser
+import sys
 
 
-parser = OptionParser(usage="""Get RADIUS details in SecurePass
+parser = ArgumentParser(
+    usage="Retrieve RADIUS details from SecurePass",
+    prog="sp-radius-info",
+)
 
-%prog [options] RADIUS_IP_ADDRESS""")
+parser.add_argument('-D', '--debug',
+                    action='store_true', dest="debug_flag",
+                    help="Enable debug output",)
+parser.add_argument('radiusip', action='store')
 
-
-parser.add_option('-D', '--debug',
-                  action='store_true', dest="debug_flag",
-	              help="Enable debug output",)
-
-opts, args = parser.parse_args()
-
+values = parser.parse_args()
 
 ## Set debug
 FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
-if opts.debug_flag:
+if values.debug_flag:
     logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 else:
     logging.basicConfig(format=FORMAT, level=logging.INFO)
 
 
 ## Load config
-config =  utils.loadConfig()
+config = utils.loadConfig()
 
 ## Config the handler
 sp_handler = securepass.SecurePass(app_id=config['app_id'],
                                    app_secret=config['app_secret'],
                                    endpoint=config['endpoint'])
 
-## Check
-try:
-    if args[0].strip() == "":
-        print "Missing RADIUS ip address. Try with --help"
-        exit(1)
-except IndexError:
-    print "Missing RADIUS ip address. Try with --help"
-    exit(1)
-
-
 ## Display info
 try:
-    radius = sp_handler.radius_info(radius=args[0])
+    radius = sp_handler.radius_info(radius=values.radiusip)
 
-    print "RADIUS details for %s" % args[0]
+    print "RADIUS details for %s" % values.radiusip
     print "================================================\n"
     print "FQDN/Name..........: %s" % radius['name']
     print "Secret.............: %s" % radius['secret']
@@ -69,6 +60,5 @@ try:
     else:
         print "disabled"
 
-
 except Exception as e:
-    print e
+    sys.exit(e)

@@ -9,75 +9,61 @@
 ##
 
 
+from argparse import ArgumentParser
 from securepass import utils
 from securepass import securepass
 import logging
-from optparse import OptionParser
+import sys
 
 
-parser = OptionParser(usage="""Test group membership for SecurePass
+parser = ArgumentParser(
+    description="Test group membership for a SecurePass user",
+    prog="sp-group-member",
+)
 
-%prog [options] userid group""")
+parser.add_argument('-D', '--debug',
+                    action='store_true', dest="debug_flag",
+                    help="Enable debug output",)
+
+parser.add_argument('-o', '--no-output',
+                    action='store_true', dest="nooutput_flag",
+                    help="Suppress output",)
+
+parser.add_argument('userid', action='store')
+parser.add_argument('group', action='store')
 
 
-parser.add_option('-D', '--debug',
-                  action='store_true', dest="debug_flag",
-	              help="Enable debug output",)
-
-parser.add_option('-o', '--no-output',
-                  action='store_true', dest="nooutput_flag",
-	              help="Suppress output",)
-
-
-opts, args = parser.parse_args()
+values = parser.parse_args()
 
 ## Set debug
 FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
-if opts.debug_flag:
+if values.debug_flag:
     logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 else:
     logging.basicConfig(format=FORMAT, level=logging.INFO)
 
 
 ## Load config
-config =  utils.loadConfig()
+config = utils.loadConfig()
 
 ## Config the handler
 sp_handler = securepass.SecurePass(app_id=config['app_id'],
                                    app_secret=config['app_secret'],
                                    endpoint=config['endpoint'])
 
-## Check user exists
-try:
-    if args[0].strip() == "":
-        print "Missing username. Try with --help"
-        exit(1)
-except IndexError:
-    print "Missing username. Try with --help"
-    exit(1)
-
-## Check password exists
-try:
-    if args[1].strip() == "":
-        print "Missing group. Try with --help"
-        exit(1)
-except IndexError:
-    print "Missing group. Try with --help"
-    exit(1)
-
-
 ## Test the actual authentication
 try:
-    if sp_handler.group_member(user=args[0], group=args[1]):
-        if not opts.nooutput_flag:
-            print "User %s belongs to group %s!" % (args[0], args[1])
-        exit(0)
+    if sp_handler.group_member(user=values.userid, group=values.group):
+        if not values.nooutput_flag:
+            print "User %s belongs to group %s!" % (
+                values.userid, values.group)
+        sys.exit(0)
     else:
-        if not opts.nooutput_flag:
-            print "User %s not in group %s!" % (args[0], args[1])
-        exit(1)
+        if not values.nooutput_flag:
+            sys.exit("User %s not in group %s!" % (
+                values.userid, values.group))
 
 except Exception as e:
-    if not opts.nooutput_flag:
-        print e
-    exit(1)
+    if not values.nooutput_flag:
+        sys.exit(e)
+    sys.exit(1)

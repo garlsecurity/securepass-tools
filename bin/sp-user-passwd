@@ -7,82 +7,67 @@
 ##          GARL Sagl (www.garl.ch)
 ##
 
-
+from argparse import ArgumentParser
 from securepass import utils
 from securepass import securepass
 import getpass
 import logging
-from optparse import OptionParser
+import sys
 
+parser = ArgumentParser(
+    description="Change or disable user password for SecurePass",
+    prog="sp-user-passwd",
+)
 
-parser = OptionParser(usage="""Change/disable user password for SecurePass
+parser.add_argument('-D', '--debug',
+                    action='store_true', dest="debug_flag",
+                    help="Enable debug output",)
+parser.add_argument('-d', '--disable',
+                    action='store_true', dest="disable_flag",
+                    default=False,
+                    help="Disable user's password",)
 
-%prog [options] userid""")
-
-
-parser.add_option('-D', '--debug',
-                  action='store_true', dest="debug_flag",
-	              help="Enable debug output",)
-
-parser.add_option('-d', '--disable',
-                  action='store_true', dest="disable_flag",
-	              help="Disable user's password",)
-
-
-opts, args = parser.parse_args()
+parser.add_argument('username', action='store')
+values = parser.parse_args()
 
 ## Set debug
 FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
-if opts.debug_flag:
+if values.debug_flag:
     logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 else:
     logging.basicConfig(format=FORMAT, level=logging.INFO)
 
 
 ## Load config
-config =  utils.loadConfig()
+config = utils.loadConfig()
 
 ## Config the handler
 sp_handler = securepass.SecurePass(app_id=config['app_id'],
                                    app_secret=config['app_secret'],
                                    endpoint=config['endpoint'])
 
-## Check user exists
-try:
-    if args[0].strip() == "":
-        print "Missing username. Try with --help"
-        exit(1)
-except IndexError:
-    print "Missing username. Try with --help"
-    exit(1)
-
-
-## If we ask for disable password
-if opts.disable_flag:
+username = values.username
+if values.disable_flag:  # was asked to disable password
     try:
-        sp_handler.user_password_disable(args[0].strip())
+        sp_handler.user_password_disable(values.username.strip())
         print "Password removed."
-        exit(0)
     except Exception as e:
-        print e
-        exit(1)
-
-## if we ask for change password
-else:
+        sys.exit(e)
+    sys.exit(0)
+else:  # was asked to change the password
     password = getpass.getpass()
     verifypw = getpass.getpass(prompt='Verify Password: ')
 
     ## if matches
     if password == verifypw:
         try:
-            sp_handler.user_password_change(user=args[0].strip(), password=password)
+            sp_handler.user_password_change(
+                user=username,
+                password=password
+            )
             print "Password changed."
-            exit(1)
         except Exception as e:
-            print e
-            exit(1)
+            sys.exit(e)
 
     else:
-        print "Passwords don't match!"
-        exit(1)
-
+        sys.exit("Passwords don't match!")

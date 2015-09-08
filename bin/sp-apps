@@ -7,43 +7,43 @@
 ##          GARL Sagl (www.garl.ch)
 ##
 
-
+from argparse import ArgumentParser
 from securepass import utils
 from securepass import securepass
 import logging
-from optparse import OptionParser
+import sys
 
 
-parser = OptionParser(usage="""List applications in SecurePass
+parser = ArgumentParser(
+    description="List applications in SecurePass",
+    prog="sp-apps",
+)
 
-%prog [options]""")
+parser.add_argument('-D', '--debug',
+                    action='store_true', dest="debug_flag",
+                    help="Enable debug output",)
 
+parser.add_argument('-d', '--details',
+                    action='store_true', dest="detail_flag",
+                    help="Enable debug output",)
 
-parser.add_option('-D', '--debug',
-                  action='store_true', dest="debug_flag",
-	              help="Enable debug output",)
+parser.add_argument('-r', '--realm',
+                    action='store', dest="realm",
+                    help="Set alternate realm",)
 
-parser.add_option('-d', '--details',
-                  action='store_true', dest="detail_flag",
-	              help="Enable debug output",)
-
-parser.add_option('-r', '--realm',
-                  action='store', dest="realm",
-	              help="Set alternate realm",)
-
-opts, args = parser.parse_args()
+values = parser.parse_args()
 
 
 ## Set debug
 FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
-if opts.debug_flag:
+if values.debug_flag:
     logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 else:
     logging.basicConfig(format=FORMAT, level=logging.INFO)
 
 
 ## Load config
-config =  utils.loadConfig()
+config = utils.loadConfig()
 
 ## Config the handler
 sp_handler = securepass.SecurePass(app_id=config['app_id'],
@@ -52,13 +52,13 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
 
 
 ## List all apps
-if opts.detail_flag:
+if values.detail_flag:
     print "%-45s %-30s" % ("App ID", "Label")
     print "=========================================================================="
 
 try:
-    for app in sp_handler.app_list(realm=opts.realm):
-        if opts.detail_flag:
+    for app in sp_handler.app_list(realm=values.realm):
+        if values.detail_flag:
             app_detail = sp_handler.app_info(app_id=app)
             print "%-45s %-30s" % (app, app_detail['label'])
         else:
@@ -66,11 +66,4 @@ try:
 
 
 except Exception as e:
-    print e
-
-
-
-
-
-
-
+    sys.exit(e)

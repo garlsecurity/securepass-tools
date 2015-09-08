@@ -10,90 +10,80 @@
 from securepass import utils
 from securepass import securepass
 import logging
-from optparse import OptionParser
+from argparse import ArgumentParser
+
+parser = ArgumentParser(
+    description="Add application in SecurePass",
+    prog="sp-app-add",
+)
 
 
-parser = OptionParser(usage="""Add application in SecurePass
+parser.add_argument('-D', '--debug',
+                    action='store_true',
+                    default=False,
+                    dest="debug_flag",
+                    help="Enable debug output",)
 
-%prog [options] label""")
+parser.add_argument('-4', '--ipv4',
+                    default="0.0.0.0/0",
+                    action='store', dest="ipv4",
+                    help="Restrict to IPv4 network (default: 0.0.0.0/0)",)
 
+parser.add_argument('-6', '--ipv6',
+                    default="::/0",
+                    action='store', dest="ipv6",
+                    help="Restrict to IPv6 network (default: ::/0)",)
 
-parser.add_option('-D', '--debug',
-                  action='store_true', dest="debug_flag",
-	              help="Enable debug output",)
+parser.add_argument('-g', '--group',
+                    default="",
+                    action='store', dest="group",
+                    help="Group name (restriction)",)
 
-parser.add_option('-4', '--ipv4',
-                  default="0.0.0.0/0",
-                  action='store', dest="ipv4",
-	              help="Restrict to IPv4 network (default: 0.0.0.0/0)",)
+parser.add_argument('-r', '--realm',
+                    action='store', dest="realm",
+                    help="Set alternate realm",)
 
-parser.add_option('-6', '--ipv6',
-                  default="::/0",
-                  action='store', dest="ipv6",
-	              help="Restrict to IPv6 network (default: ::/0)",)
+parser.add_argument('-w', '--write',
+                    action='store_true', dest="write",
+                    default=False,
+                    help="Write capabilites (default readonly)",)
 
-parser.add_option('-g', '--group',
-                  default="",
-                  action='store', dest="group",
-	              help="Group name (restriction)",)
+parser.add_argument('-p', '--privacy',
+                    action='store_true', dest="privacy",
+                    default=False,
+                    help="Privacy flag (default no)",)
 
-parser.add_option('-r', '--realm',
-                  action='store', dest="realm",
-	              help="Set alternate realm",)
+parser.add_argument('label', action='store')
 
-parser.add_option('-w', '--write',
-                  action='store_true', dest="write",
-                  default=False,
-	              help="Write capabilites (default readonly)",)
-
-parser.add_option('-p', '--privacy',
-                  action='store_true', dest="privacy",
-                  default=False,
-	              help="Privacy flag (default no)",)
-
-
-opts, args = parser.parse_args()
-
+values = parser.parse_args()
 
 ## Set debug
 FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
-if opts.debug_flag:
+if values.debug_flag:
     logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 else:
     logging.basicConfig(format=FORMAT, level=logging.INFO)
 
 
 ## Load config
-config =  utils.loadConfig()
+config = utils.loadConfig()
 
 ## Config the handler
 sp_handler = securepass.SecurePass(app_id=config['app_id'],
                                    app_secret=config['app_secret'],
                                    endpoint=config['endpoint'])
 
-## Check
-try:
-    if args[0].strip() == "":
-        print "Missing label. Try with --help"
-        exit(1)
-except IndexError:
-    print "Missing label. Try with --help"
-    exit(1)
-
-
-
-
 ## Add the user
-logging.debug("Adding application %s" % args[0])
+logging.debug("Adding application %s" % values.label)
 
 try:
-    result = sp_handler.app_add(label=args[0],
-                                allow_network_ipv4=opts.ipv4,
-                                allow_network_ipv6=opts.ipv6,
-                                write=opts.write,
-                                realm=opts.realm,
-                                group=opts.group.strip().lower(),
-                                privacy=opts.privacy)
+    result = sp_handler.app_add(label=values.label,
+                                allow_network_ipv4=values.ipv4,
+                                allow_network_ipv6=values.ipv6,
+                                write=values.write,
+                                realm=values.realm,
+                                group=values.group.strip().lower(),
+                                privacy=values.privacy)
 
     print "Application ID: %s" % result['app_id']
     print "Application Secret: %s" % result['app_secret']

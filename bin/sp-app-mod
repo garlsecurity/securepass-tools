@@ -7,116 +7,107 @@
 ##          GARL Sagl (www.garl.ch)
 ##
 
+from argparse import ArgumentParser
 from securepass import utils
 from securepass import securepass
 import logging
-from optparse import OptionParser
+import sys
 
+parser = ArgumentParser(
+    description="Modify an application in SecurePass",
+    prog="sp-app-mod",
+)
 
-parser = OptionParser(usage="""Modify an application in SecurePass
+parser.add_argument('-D', '--debug',
+                    action='store_true', dest="debug_flag",
+                    help="Enable debug output",)
 
-%prog [options] appid""")
+parser.add_argument('-l', '--label',
+                    default=None,
+                    action='store', dest="label",
+                    help="Label",)
 
+parser.add_argument('-4', '--ipv4',
+                    default=None,
+                    action='store', dest="ipv4",
+                    help="Restrict to IPv4 network",)
 
-parser.add_option('-D', '--debug',
-                  action='store_true', dest="debug_flag",
-	              help="Enable debug output",)
+parser.add_argument('-6', '--ipv6',
+                    default=None,
+                    action='store', dest="ipv6",
+                    help="Restrict to IPv6 network",)
 
-parser.add_option('-l', '--label',
-                  default=None,
-                  action='store', dest="label",
-	              help="Label",)
+parser.add_argument('-g', '--group',
+                    default=None,
+                    action='store', dest="group",
+                    help="Group name (restriction)",)
 
-parser.add_option('-4', '--ipv4',
-                  default=None,
-                  action='store', dest="ipv4",
-	              help="Restrict to IPv4 network",)
+parser.add_argument('-w', '--write',
+                    action='store_true', dest="write",
+                    default=False,
+                    help="Write capabilites",)
 
-parser.add_option('-6', '--ipv6',
-                  default=None,
-                  action='store', dest="ipv6",
-	              help="Restrict to IPv6 network",)
+parser.add_argument('-r', '--read',
+                    action='store_true', dest="read",
+                    default=False,
+                    help="Readonly capabiliteies",)
 
-parser.add_option('-g', '--group',
-                  default=None,
-                  action='store', dest="group",
-	              help="Group name (restriction)",)
+parser.add_argument('appid', action='store')
 
-parser.add_option('-w', '--write',
-                  action='store_true', dest="write",
-                  default=False,
-	              help="Write capabilites",)
-
-parser.add_option('-r', '--read',
-                  action='store_true', dest="read",
-                  default=False,
-	              help="Readonly capabiliteies",)
-
-opts, args = parser.parse_args()
+values = parser.parse_args()
 
 
 ## Set debug
 FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
-if opts.debug_flag:
+if values.debug_flag:
     logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 else:
     logging.basicConfig(format=FORMAT, level=logging.INFO)
 
 
 ## Load config
-config =  utils.loadConfig()
+config = utils.loadConfig()
 
 ## Config the handler
 sp_handler = securepass.SecurePass(app_id=config['app_id'],
                                    app_secret=config['app_secret'],
                                    endpoint=config['endpoint'])
 
-## Check
-try:
-    if args[0].strip() == "":
-        print "Missing appid. Try with --help"
-        exit(1)
-except IndexError:
-    print "Missing appid. Try with --help"
-    exit(1)
-
-
-
-
 ## Add the user
-logging.debug("Modifying application %s" % args[0])
+logging.debug("Modifying application %s" % values.appid)
 
 try:
 
     ## Grabbing previous configuration
-    myapp = sp_handler.app_info(args[0])
+    myapp = sp_handler.app_info(values.appid)
 
-    if opts.label is not None:
-        myapp['label'] = opts.label
+    if values.label is not None:
+        myapp['label'] = values.label
 
-    if opts.ipv4 is not None:
-         myapp['allow_network_ipv4'] = opts.ipv4
+    if values.ipv4 is not None:
+        myapp['allow_network_ipv4'] = values.ipv4
 
-    if opts.ipv6 is not None:
-        myapp['allow_network_ipv6'] = opts.ipv6
+    if values.ipv6 is not None:
+        myapp['allow_network_ipv6'] = values.ipv6
 
-    if opts.group is not None:
-        myapp['group'] = opts.group.strip()
+    if values.group is not None:
+        myapp['group'] = values.group.strip()
 
-    if opts.write:
+    if values.write:
         myapp['write'] = True
 
-    if opts.read:
+    if values.read:
         myapp['write'] = False
 
-    result = sp_handler.app_modify(app_id=args[0],
-                                  label=myapp['label'],
-                                  allow_network_ipv4=myapp['allow_network_ipv4'],
-                                  allow_network_ipv6=myapp['allow_network_ipv6'],
-                                  write=myapp['write'],
-                                  group=myapp['group'])
-    exit(0)
+    result = sp_handler.app_modify(
+        app_id=values.appid,
+        label=myapp['label'],
+        allow_network_ipv4=myapp['allow_network_ipv4'],
+        allow_network_ipv6=myapp['allow_network_ipv6'],
+        write=myapp['write'],
+        group=myapp['group']
+    )
+    sys.exit(0)
 
 except Exception as e:
-    print e
-    exit(1)
+    sys.exit(e)
