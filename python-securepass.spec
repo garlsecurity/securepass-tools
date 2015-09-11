@@ -10,8 +10,10 @@ Source0:        https://github.com/garlsecurity/securepass-tools/archive/v%{vers
 
 BuildArch:      noarch
 BuildRequires:  python-pycurl
+BuildRequires:  python-argparse
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 Requires:       python-pycurl
+Requires:       python-argparse
 
 %description
 The tools and python libraries for accessing SecurePass platform.

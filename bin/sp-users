@@ -52,13 +52,13 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
                                    endpoint=config['endpoint'])
 
 ## List all users
-if values.detail_flag and not values.noheader_flag:
+if values.details_flag and not values.noheader_flag:
     print "%-35s %-35s %s" % ("User ID", "Name and Surname", "Status")
     print "================================================================================"
 
 try:
     for user in sp_handler.user_list(realm=values.realm):
-        if values.detail_flag:
+        if values.details_flag:
             user_detail = sp_handler.user_info(user=user)
             fullname = "%s %s" % (user_detail['name'], user_detail['surname'])
 

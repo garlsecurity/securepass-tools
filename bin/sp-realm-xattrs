@@ -25,8 +25,8 @@ parser.add_argument('-D', '--debug',
                     help="Enable debug output",)
 parser.add_argument('realm', action='store')
 parser.add_argument('operation', action='store', choices=operations)
-parser.add_argument('op_attribute', action='store', default=None)
-parser.add_argument('op_value', action='store', default=None)
+parser.add_argument('attribute', nargs="?", default=None)
+parser.add_argument('value', nargs="?", default=None)
 
 values = parser.parse_args()
 
@@ -47,8 +47,8 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
 
 realm = values.realm
 operation = values.operation
-op_attribute = values.op_attribute
-op_value = values.op_value
+op_attribute = values.attribute
+op_value = values.value
 ## If list operation specified
 if operation == "list":
 
