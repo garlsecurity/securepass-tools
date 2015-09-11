@@ -7,59 +7,51 @@
 ##          GARL Sagl (www.garl.ch)
 ##
 
-
+from argparse import ArgumentParser
 from securepass import utils
 from securepass import securepass
 import logging
-from optparse import OptionParser
+import sys
 
+parser = ArgumentParser(
+    description="Delete an application from SecurePass",
+    prog="sp-app-del",
+)
 
-parser = OptionParser(usage="""Delete an application in SecurePass
+parser.add_argument('-D',
+                    '--debug',
+                    action='store_true', dest="debug_flag",
+                    help="Enable debug output",)
 
-%prog [options] appid""")
+parser.add_argument('appid', action='store')
 
-
-parser.add_option('-D', '--debug',
-                  action='store_true', dest="debug_flag",
-	              help="Enable debug output",)
-
-opts, args = parser.parse_args()
+values = parser.parse_args()
 
 
 ## Set debug
 FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
-if opts.debug_flag:
+if values.debug_flag:
     logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 else:
     logging.basicConfig(format=FORMAT, level=logging.INFO)
 
 
 ## Load config
-config =  utils.loadConfig()
+config = utils.loadConfig()
 
 ## Config the handler
 sp_handler = securepass.SecurePass(app_id=config['app_id'],
                                    app_secret=config['app_secret'],
                                    endpoint=config['endpoint'])
-
-## Check
-try:
-    if args[0].strip() == "":
-        print "Missing appid. Try with --help"
-        exit(1)
-except IndexError:
-    print "Missing appid. Try with --help"
-    exit(1)
-
-
 ## ask & remove
-choice = raw_input("Do you want to delete application %s (Y/N)? " % args[0]).lower()
+choice = raw_input(
+    "Do you want to delete application %s (Y/N)? " % values.appid
+).lower()
 
 try:
-    if choice == "yes" or choice == "y":
-        sp_handler.app_delete(app_id=args[0])
+    if choice in ("yes", "y"):
+        sp_handler.app_delete(app_id=values.appid)
     exit(1)
 
 except Exception as e:
-    print e
-    exit(1)
+    sys.exit(e)

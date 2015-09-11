@@ -8,75 +8,60 @@
 ##
 
 
+from argparse import ArgumentParser
 from securepass import utils
 from securepass import securepass
 import logging
-from optparse import OptionParser
+import sys
 
 
-parser = OptionParser(usage="""Modify user in SecurePass
+parser = ArgumentParser(
+    description="Modify user in SecurePass",
+    prog="sp-user-mod",
+)
+enable_parser = parser.add_mutually_exclusive_group(required=False)
 
-%prog [options] userid""")
+parser.add_argument(
+    '-D', '--debug', action='store_true',
+    dest="debug_flag", help="Enable debug output",
+)
+enable_parser.add_argument(
+    '-d', '--disable', action='store_false',
+    dest="enable_flag", help="Disable user",
+)
+enable_parser.add_argument(
+    '-e', '--enable', action='store_true',
+    dest="enable_flag", help="Enable user",
+)
+parser.add_argument('userid', action='store')
 
-
-parser.add_option('-D', '--debug',
-                  action='store_true', dest="debug_flag",
-	              help="Enable debug output",)
-
-parser.add_option('-d', '--disable',
-                  action='store_true', dest="disable_flag",
-	              help="Disable user",)
-
-parser.add_option('-e', '--enable',
-                  action='store_true', dest="enable_flag",
-	              help="Enable user",)
-
-
-opts, args = parser.parse_args()
+parser.set_defaults(enable_flag=None)
+values = parser.parse_args()
 
 
 ## Set debug
 FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
-if opts.debug_flag:
+if values.debug_flag:
     logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 else:
     logging.basicConfig(format=FORMAT, level=logging.INFO)
 
-## Check
-try:
-    if args[0].strip() == "":
-        print "Missing username. Try with --help"
-        exit(1)
-
-except IndexError:
-    print "Missing username. Try with --help"
-    exit(1)
-
 ## Load config
-config =  utils.loadConfig()
+config = utils.loadConfig()
 
 ## Config the handler
 sp_handler = securepass.SecurePass(app_id=config['app_id'],
                                    app_secret=config['app_secret'],
                                    endpoint=config['endpoint'])
 
-
-
-## Check if we have specified both enable and disable at the same time :)
-if opts.disable_flag and opts.enable_flag:
-    logging.error("Can't specify both enable and disable for the same user")
-    exit(1)
-
 try:
     ## Disable user
-    if opts.disable_flag:
-        sp_handler.user_disable(args[0].strip())
-
+    if values.enable_flag is False:
+        sp_handler.user_disable(values.userid)
 
     ## Enable user
-    if opts.enable_flag:
-        sp_handler.user_enable(args[0].strip())
-
+    elif values.enable_flag is True:
+        sp_handler.user_enable(values.userid)
 
 except Exception as e:
-    print e
+    sys.exit(e)

@@ -8,55 +8,47 @@
 ##
 
 
+from argparse import ArgumentParser
 from securepass import utils
 from securepass import securepass
 import logging
-from optparse import OptionParser
+import sys
 
+parser = ArgumentParser(
+    description="Retrieve application's details from SecurePass",
+    prog="sp-app-info",
+)
 
-parser = OptionParser(usage="""Get application details in SecurePass
+parser.add_argument('-D', '--debug',
+                    action='store_true', dest="debug_flag",
+                    help="Enable debug output",)
 
-%prog [options] appid""")
+parser.add_argument('appid', action='store')
 
-
-parser.add_option('-D', '--debug',
-                  action='store_true', dest="debug_flag",
-	              help="Enable debug output",)
-
-opts, args = parser.parse_args()
+values = parser.parse_args()
 
 
 ## Set debug
 FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
-if opts.debug_flag:
+if values.debug_flag:
     logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 else:
     logging.basicConfig(format=FORMAT, level=logging.INFO)
 
 
 ## Load config
-config =  utils.loadConfig()
+config = utils.loadConfig()
 
 ## Config the handler
 sp_handler = securepass.SecurePass(app_id=config['app_id'],
                                    app_secret=config['app_secret'],
                                    endpoint=config['endpoint'])
 
-## Check
-try:
-    if args[0].strip() == "":
-        print "Missing appid. Try with --help"
-        exit(1)
-except IndexError:
-    print "Missing appid. Try with --help"
-    exit(1)
-
-
 ## Display info
 try:
-    myapp = sp_handler.app_info(app_id=args[0])
+    myapp = sp_handler.app_info(app_id=values.appid)
 
-    print "Application details for %s" % args[0]
+    print "Application details for %s" % values.appid
     print "================================================\n"
     print "Label..............: %s" % myapp['label']
     print "Realm..............: %s" % myapp['realm']
@@ -72,6 +64,5 @@ try:
     print "IPv6 network ACL...: %s" % myapp['allow_network_ipv6']
     print "Privacy mode ......: %s" % myapp['privacy']
 
-
 except Exception as e:
-    print e
+    sys.exit(e)

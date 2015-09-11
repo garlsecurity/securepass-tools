@@ -12,96 +12,76 @@
 ##          GARL Sagl (www.garl.ch)
 ##
 
-
+from argparse import ArgumentParser
 from securepass import utils
 from securepass import securepass
 import logging
-from optparse import OptionParser
+
 
 def get_user_key(handler, username):
     # Output the ssh key, if found as attribute
     # TODO: Need to put some caching here
     try:
         attributes = handler.users_xattr_list(user=username)
-        if 'sshkey' in attributes:
-            return attributes['sshkey']
-
-    except Exception as e:
+        return attributes.get("sshkey", None)
+    except Exception:
         return None
+
 
 # Autoappend the realm
 def expand_user(user):
-   if not '@' in user and 'realm' in config:
-      return "%s@%s" % (user, config['realm'])
-   else:
-      return user
+    if not '@' in user and 'realm' in config:
+        return "%s@%s" % (user, config['realm'])
+    else:
+        return user
 
 
-parser = OptionParser(usage="""List users in SecurePass
+parser = ArgumentParser(
+    description="List user's SSH keys",
+    prog="sp-sshkey",
+)
 
-%prog [options]""")
 
+parser.add_argument('-D', '--debug',
+                    action='store_true', dest="debug_flag",
+                    help="Enable debug output",)
+parser.add_argument('-r', '--realm',
+                    action='store', dest="realm",
+                    help="Set alternate realm",)
+parser.add_argument('username', action='store')
 
-parser.add_option('-D', '--debug',
-                  action='store_true', dest="debug_flag",
-	              help="Enable debug output",)
-
-parser.add_option('-r', '--realm',
-                  action='store', dest="realm",
-	              help="Set alternate realm",)
-
-opts, args = parser.parse_args()
+values = parser.parse_args()
 
 
 ## Set debug
 FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
-if opts.debug_flag:
+if values.debug_flag:
     logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 else:
     logging.basicConfig(format=FORMAT, level=logging.INFO)
 
 
 ## Load config
-config =  utils.loadConfig()
+config = utils.loadConfig()
 
 ## Config the handler
 sp_handler = securepass.SecurePass(app_id=config['app_id'],
                                    app_secret=config['app_secret'],
                                    endpoint=config['endpoint'])
 
-
-## Check username
-try:
-    if args[0].strip() == "":
-        print "Missing username. Try with --help"
-        exit(1)
-
-except IndexError:
-    print "Missing username. Try with --help"
-    exit(1)
-
 ## Check if we have a domain, otherwise append
-username = expand_user(args[0])
-
+username = expand_user(values.username)
 logging.debug("Username is: %s" % username)
 
 # Special case for root, otherwise print ssh key
 if username.split("@")[0] == 'root' and 'root' in config:
-   logging.debug("root request detected, cycling for users")
+    logging.debug("root request detected, cycling for users")
 
-   for user in config['root'].split(','):
-       key = get_user_key(sp_handler, expand_user(user))
-       if key is not None:
-          print key
-
+    for user in config['root'].split(','):
+        key = get_user_key(sp_handler, expand_user(user))
+        if key is not None:
+            print key
 else:
-   key = get_user_key(sp_handler, username)
-   if key is not None:
-      print key
-
-
-
-
-
-
-
+    key = get_user_key(sp_handler, username)
+    if key is not None:
+        print key

@@ -8,76 +8,55 @@
 ##          GARL Sagl (www.garl.ch)
 ##
 
-
+from argparse import ArgumentParser
 from securepass import utils
 from securepass import securepass
 import logging
-from optparse import OptionParser
+import sys
 
+parser = ArgumentParser(
+    description="Test authentication for SecurePass",
+    prog="sp-user-auth",
+)
 
-parser = OptionParser(usage="""Test authentication for SecurePass
+parser.add_argument('-D', '--debug',
+                    action='store_true', dest="debug_flag",
+                    help="Enable debug output",)
+parser.add_argument('-o', '--no-output',
+                    action='store_true', dest="nooutput_flag",
+                    help="Suppress output",)
+parser.add_argument("username", action="store")
+parser.add_argument("password", action="store")
 
-%prog [options] userid secret""")
-
-
-parser.add_option('-D', '--debug',
-                  action='store_true', dest="debug_flag",
-	              help="Enable debug output",)
-
-parser.add_option('-o', '--no-output',
-                  action='store_true', dest="nooutput_flag",
-	              help="Suppress output",)
-
-
-opts, args = parser.parse_args()
+values = parser.parse_args()
 
 ## Set debug
 FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
-if opts.debug_flag:
+if values.debug_flag:
     logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 else:
     logging.basicConfig(format=FORMAT, level=logging.INFO)
 
 
 ## Load config
-config =  utils.loadConfig()
+config = utils.loadConfig()
 
 ## Config the handler
 sp_handler = securepass.SecurePass(app_id=config['app_id'],
                                    app_secret=config['app_secret'],
                                    endpoint=config['endpoint'])
 
-## Check user exists
+# Test the actual authentication
 try:
-    if args[0].strip() == "":
-        print "Missing username. Try with --help"
-        exit(1)
-except IndexError:
-    print "Missing username. Try with --help"
-    exit(1)
-
-## Check password exists
-try:
-    if args[1].strip() == "":
-        print "Missing secret. Try with --help"
-        exit(1)
-except IndexError:
-    print "Missing secret. Try with --help"
-    exit(1)
-
-
-## Test the actual authentication
-try:
-    if sp_handler.user_auth(user=args[0], secret=args[1]):
-        if not opts.nooutput_flag:
+    if sp_handler.user_auth(user=values.username,
+                            secret=values.password):
+        if not values.nooutput_flag:
             print "Authenticated!"
-        exit(0)
     else:
-        if not opts.nooutput_flag:
-            print "Access denied!"
-        exit(1)
+        if not values.nooutput_flag:
+            sys.exit("Access denied.")
 
 except Exception as e:
-    if not opts.nooutput_flag:
-        print e
-    exit(1)
+    if not values.nooutput_flag:
+        sys.exit(e)
+    sys.exit(1)

@@ -8,55 +8,44 @@
 ##
 
 
+from argparse import ArgumentParser
 from securepass import utils
 from securepass import securepass
 import logging
-from optparse import OptionParser
+import sys
 
+parser = ArgumentParser(
+    description="Get user details from SecurePass",
+    prog="sp-user-info",
+)
 
-parser = OptionParser(usage="""Get user details in SecurePass
-
-%prog [options] userid""")
-
-
-parser.add_option('-D', '--debug',
-                  action='store_true', dest="debug_flag",
-	              help="Enable debug output",)
-
-opts, args = parser.parse_args()
-
+parser.add_argument('-D', '--debug',
+                    action='store_true', dest="debug_flag",
+                    help="Enable debug output",)
+parser.add_argument('userid', action='store')
+values = parser.parse_args()
 
 ## Set debug
 FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
-if opts.debug_flag:
+if values.debug_flag:
     logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 else:
     logging.basicConfig(format=FORMAT, level=logging.INFO)
 
 
 ## Load config
-config =  utils.loadConfig()
+config = utils.loadConfig()
 
 ## Config the handler
 sp_handler = securepass.SecurePass(app_id=config['app_id'],
                                    app_secret=config['app_secret'],
                                    endpoint=config['endpoint'])
 
-## Check
-try:
-    if args[0].strip() == "":
-        print "Missing username. Try with --help"
-        exit(1)
-except IndexError:
-    print "Missing username. Try with --help"
-    exit(1)
-
-
 ## Display info
 try:
-    myuser = sp_handler.user_info(user=args[0])
+    myuser = sp_handler.user_info(user=values.userid)
 
-    print "User details for %s" % args[0]
+    print "User details for %s" % values.userid
     print "================================================\n"
     print "Name.............: %s" % myuser['name']
     print "Surname..........: %s" % myuser['surname']
@@ -72,7 +61,6 @@ try:
     else:
         print "Disabled"
 
-
     print "Password status..:",
 
     if myuser['password']:
@@ -80,6 +68,5 @@ try:
     else:
         print "Disabled"
 
-
 except Exception as e:
-    print e
+    sys.exit(e)

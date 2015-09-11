@@ -8,51 +8,50 @@
 ##
 
 
+from argparse import ArgumentParser
 from securepass import utils
 from securepass import securepass
 import logging
-from optparse import OptionParser
-from operator import itemgetter
+import sys
 
-parser = OptionParser(usage="""Show logs for SecurePass
+parser = ArgumentParser(
+    description="Show logs for SecurePass",
+    prog="sp-logs",
+)
 
-%prog [options] """)
+parser.add_argument('-D', '--debug',
+                    action='store_true', dest="debug_flag",
+                    help="Enable debug output",)
 
+parser.add_argument('-r', '--realm',
+                    action='store', dest="realm",
+                    help="Set alternate realm",)
 
-parser.add_option('-D', '--debug',
-                  action='store_true', dest="debug_flag",
-	              help="Enable debug output",)
+parser.add_argument('-s', '--start',
+                    action='store', dest="start",
+                    help="Start date (format: YYYY-MM-DD)",)
 
-parser.add_option('-r', '--realm',
-                  action='store', dest="realm",
-	              help="Set alternate realm",)
+parser.add_argument('-e', '--end',
+                    action='store', dest="end",
+                    help="End date (format: YYYY-MM-DD)",)
 
-parser.add_option('-s', '--start',
-                  action='store', dest="start",
-	              help="Start date (format: YYYY-MM-DD)",)
+parser.add_argument('-c', '--csv',
+                    action='store_true', dest="full_flag",
+                    help="Enable csv full output",)
 
-parser.add_option('-e', '--end',
-                  action='store', dest="end",
-	              help="End date (format: YYYY-MM-DD)",)
-
-parser.add_option('-c', '--csv',
-                  action='store_true', dest="full_flag",
-	              help="Enable csv full output",)
-
-
-opts, args = parser.parse_args()
+values = parser.parse_args()
 
 
 ## Set debug
 FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
-if opts.debug_flag:
+if values.debug_flag:
     logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 else:
     logging.basicConfig(format=FORMAT, level=logging.INFO)
 
 
 ## Load config
-config =  utils.loadConfig()
+config = utils.loadConfig()
 
 ## Config the handler
 sp_handler = securepass.SecurePass(app_id=config['app_id'],
@@ -63,19 +62,24 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
 
 ## Go for the logs
 try:
-    all_logs = sp_handler.get_logs(realm=opts.realm, start=opts.start, end=opts.end)['logs']
+    all_logs = sp_handler.get_logs(
+        realm=values.realm, start=values.start, end=values.end)['logs']
 
     ## print csv header
-    if opts.full_flag:
+    if values.full_flag:
         print "timestamp;uuid;message;realm;app;level"
 
     ## Sort the return dict for time
     for time in sorted(all_logs):
-        if opts.full_flag:
-            print "%s;%s;%s;%s;%s;%s" % (time, all_logs[time]['uuid'], all_logs[time]['message'], all_logs[time]['realm'], all_logs[time]['app'], all_logs[time]['level'])
+        if values.full_flag:
+            print "%s;%s;%s;%s;%s;%s" % (
+                time, all_logs[time]['uuid'], all_logs[time]['message'],
+                all_logs[time]['realm'], all_logs[time]['app'],
+                all_logs[time]['level']
+            )
         else:
             print "%-19s %s" % (time, all_logs[time]['message'])
 
 
 except Exception as e:
-    print e
+    sys.exit(e)

@@ -7,113 +7,86 @@
 ##          GARL Sagl (www.garl.ch)
 ##
 
-
+from argparse import ArgumentParser
 from securepass import utils
 from securepass import securepass
 import logging
-from optparse import OptionParser
+import sys
 
+operations = ("list", "set", "delete")
 
-parser = OptionParser(usage="""Operate on realms' extended attributes in SecurePass
+parser = ArgumentParser(
+    description="Operate on realms' extended attributes in SecurePass",
+    prog="sp-realm-xattrs",
+)
 
-%prog [options] realmid [list|set|delete] """)
+parser.add_argument('-D', '--debug',
+                    action='store_true', dest="debug_flag",
+                    help="Enable debug output",)
+parser.add_argument('realm', action='store')
+parser.add_argument('operation', action='store', choices=operations)
+parser.add_argument('attribute', nargs="?", default=None)
+parser.add_argument('value', nargs="?", default=None)
 
-
-parser.add_option('-D', '--debug',
-                  action='store_true', dest="debug_flag",
-	              help="Enable debug output",)
-
-opts, args = parser.parse_args()
-
+values = parser.parse_args()
 
 ## Set debug
 FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
-if opts.debug_flag:
+if values.debug_flag:
     logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 else:
     logging.basicConfig(format=FORMAT, level=logging.INFO)
 
-
 ## Load config
-config =  utils.loadConfig()
+config = utils.loadConfig()
 
 ## Config the handler
 sp_handler = securepass.SecurePass(app_id=config['app_id'],
                                    app_secret=config['app_secret'],
                                    endpoint=config['endpoint'])
 
-## Check username
-try:
-    if args[0].strip() == "":
-        print "Missing realm. Try with --help"
-        exit(1)
-
-except IndexError:
-    print "Missing realm. Try with --help"
-    exit(1)
-
-## Check operation
-try:
-    if args[1].strip().lower() != "list" and \
-       args[1].strip().lower() != "set" and \
-       args[1].strip().lower() != "get" and  \
-       args[1].strip().lower() != "delete":
-            print "Operation not valid. Try with --help"
-            exit(1)
-
-except IndexError:
-    print "Operations not specified. Try with --help"
-    exit(1)
-
-
-
+realm = values.realm
+operation = values.operation
+op_attribute = values.attribute
+op_value = values.value
 ## If list operation specified
-if args[1].strip().lower() == "list":
+if operation == "list":
 
     ## Display info
     try:
-        attributes = sp_handler.realms_xattr_list(realm=args[0])
+        attributes = sp_handler.realms_xattr_list(realm=realm)
 
-        print "Extended attributes details for %s" % args[0]
+        print "Extended attributes details for %s" % realm
         print "================================================\n"
 
-        for attribute in attributes:
-            print "%s: %s" % (attribute, attributes[attribute])
-
+        for attribute, value in attributes.items():
+            print "%s: %s" % (attribute, value)
 
     except Exception as e:
-        print e
-
-
-## Set values
-if args[1].strip().lower() == "set":
-
+        sys.exit(e)
+elif operation == "set":  # Set values
+    if op_attribute is None or op_value is None:
+        sys.exit(
+            "Couldn't find either attribute or value: set <attribute> <value>"
+        )
+    ## Set value
     try:
-        ## Set value
-        sp_handler.realms_xattr_set(realm=args[0], attribute=args[2], value=args[3])
+        sp_handler.realms_xattr_set(
+            realm=realm, attribute=op_attribute, value=op_value
+        )
 
-        print "Attribute %s set for realm %s" % (args[2], args[0])
-
-    except IndexError:
-            print "set <attribute> <value>"
-            exit(1)
+        print "Attribute %s set for realm %s" % (op_attribute, realm)
 
     except Exception as e:
-        print e
-
-
-## Delete
-if args[1].strip().lower() == "delete":
-
+        sys.exit(e)
+elif operation == "delete":  # Delete
+    if op_attribute is None:
+        sys.exit(
+            "Couldn't find attribute: delete <attribute>"
+        )
     try:
-        ## Set value
-        sp_handler.realms_xattr_delete(realm=args[0], attribute=args[2])
-
-        print "Attribute %s deleted for realm %s" % (args[2], args[0])
-
-    except IndexError:
-        print "delete <attribute>"
-        exit(1)
+        sp_handler.realms_xattr_delete(realm=realm, attribute=op_attribute)
+        print "Attribute %s deleted for realm %s" % (op_attribute, realm)
 
     except Exception as e:
-        print e
+        sys.exit(e)
