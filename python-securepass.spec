@@ -1,5 +1,5 @@
 Name:           python-securepass
-Version:        0.4.1
+Version:        0.4.3
 Release:        1%{?dist}
 Summary:        SecurePass Python tools
 
@@ -49,6 +49,10 @@ It uses the SecurePass public APIs.
 %endif
 
 %changelog
+* Sat Sep 12 2015 Alessio Treglia <alessio@debian.org> 0.4.3-1
+- Drop optparse in favor of argparse
+- Fix broken import statement in the Django module
+
 * Fri Aug 28 2015 Giuseppe Paterno' <gpaterno@gpaterno.com> 0.4.1-1
 - Added SSH key helper
 
