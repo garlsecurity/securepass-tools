@@ -5,7 +5,7 @@ except ImportError:
 
 setup(
     name='securepass',
-    version='0.4.3-dev',
+    version='0.4.3',
     author="Giuseppe Paterno'",
     author_email='gpaterno@gpaterno.com',
     packages=['securepass'],
