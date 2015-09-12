@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+# 0.4.3
+ * Fix import statements in the Django module
+ * Drop optparse in favor of argparse
+
+# 0.4.2
+ * Fixes for RPM packaging
+
 # 0.4.1
  * SSH key helper for OpenSSH
  * Initial SP config file creator/updater
