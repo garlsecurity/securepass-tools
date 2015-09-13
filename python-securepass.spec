@@ -1,6 +1,6 @@
 Name:           python-securepass
 Version:        0.4.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        SecurePass Python tools
 
 Group:          Development/Libraries
@@ -39,6 +39,26 @@ It uses the SecurePass public APIs.
 %files
 %defattr(-,root,root,-)
 %{python_sitelib}/*
+%doc README.txt README.md 
+
+%if 0%{?rhel} <= 6
+   %doc LICENSE 
+%else 
+   %license LICENSE
+%endif
+
+%package -n securepass-tools
+Requires:   python-securepass
+Summary:    SecurePass Tools 
+Group:      Applications/Internet 
+
+%description -n securepass-tools
+The official tools for accessing SecurePass platform.
+
+It uses the SecurePass public APIs.
+
+%files -n securepass-tools
+%defattr(-,root,root,-)
 %{_usr}/bin/*
 %doc README.txt README.md securepass.conf.example contrib/extract_ssh_key.sh 
 
@@ -49,6 +69,9 @@ It uses the SecurePass public APIs.
 %endif
 
 %changelog
+* Sun Sep 13 2015 Giuseppe Paterno' <gpaterno@gpaterno.com> 0.4.3-2
+- Package split 
+
 * Sat Sep 12 2015 Alessio Treglia <alessio@debian.org> 0.4.3-1
 - Drop optparse in favor of argparse
 - Fix broken import statement in the Django module
