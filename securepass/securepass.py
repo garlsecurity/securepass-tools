@@ -468,7 +468,7 @@ class SecurePass(object):
         """
 
         request = {}
-        SWTOKENS = ('iphone', 'android', 'blackberry', 'software')
+        SWTOKENS = ('iphone', 'android', 'blackberry', 'software', 'securepass', 'googleauth')
 
         if user is not None:
             request['USERNAME'] = user

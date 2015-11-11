@@ -71,8 +71,8 @@ else:
 # Fixup of the DEFAULT
 def replace_word(infile, old_word, new_word):
     if not os.path.isfile(infile):
-        print ("Error on replace_word, not a regular file: "+infile)
-        sys.exit(1)
+        logging.debug("Creating emtpy file %s" % infile)
+        os.mknod(infile)
 
     f1 = open(infile, 'r').read()
     f2 = open(infile, 'w')

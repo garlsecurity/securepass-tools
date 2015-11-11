@@ -14,7 +14,7 @@ from securepass import securepass
 import logging
 import sys
 
-token_types = ('iphone', 'android', 'blackberry', 'software')
+token_types = ('iphone', 'android', 'blackberry', 'software', 'googleauth', 'securepass')
 
 parser = ArgumentParser(
     description="Provision SecurePass user",
