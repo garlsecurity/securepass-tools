@@ -60,8 +60,9 @@ try:
         sys.exit(0)
     else:
         if not values.nooutput_flag:
-            sys.exit("User %s not in group %s!" % (
-                values.userid, values.group))
+            print "User %s not in group %s!" % (
+                values.userid, values.group)
+        sys.exit(1)
 
 except Exception as e:
     if not values.nooutput_flag:
