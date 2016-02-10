@@ -1,6 +1,9 @@
 CHANGELOG
 =========
 
+# 0.4.4 
+  * Added stripping windows domain code from ssh key retrival
+
 # 0.4.3
  * Fix import statements in the Django module
  * Drop optparse in favor of argparse

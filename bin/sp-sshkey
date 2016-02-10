@@ -28,8 +28,16 @@ def get_user_key(handler, username):
         return None
 
 
-# Autoappend the realm
+# Autoappend the realm and strip windows domain if necessary
 def expand_user(user):
+    logging.debug("Expanding user %s" % user)
+
+    if 'strip_windows_domain' in config and '\\' in user:
+        if config['strip_windows_domain'].lower() == 'true':
+            logging.debug('Stripping windows domain')
+            user = user.partition("\\")[2]
+
+
     if not '@' in user and 'realm' in config:
         return "%s@%s" % (user, config['realm'])
     else:

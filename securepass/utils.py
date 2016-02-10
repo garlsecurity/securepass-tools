@@ -72,6 +72,7 @@ def loadConfig():
     # SSH behaviour
     try:
         myconfig['root'] = config.get("ssh", "root")
+        myconfig['strip_windows_domain'] = config.get("ssh", "strip_windows_domain")
     except:
         pass
 
