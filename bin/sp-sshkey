@@ -7,6 +7,8 @@
 ## In securepass.conf specify:
 ## [nss] and realm = myrealm to assign default realm
 ## [ssh] and root = user,user to assign root keys
+## [ssh] and strip_windows_domain = true to strip windows domain eg: DOMAIN\user
+##       when retrieving ssh keys
 ##
 ## (c) 2013 Giuseppe Paterno' (gpaterno@gpaterno.com)
 ##          GARL Sagl (www.garl.ch)
