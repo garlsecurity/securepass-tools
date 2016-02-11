@@ -1,8 +1,13 @@
 CHANGELOG
 =========
 
-# 0.4.4 
+# 0.4.4a
   * Added stripping windows domain code from ssh key retrival
+
+# 0.4.4
+ * Fixup for missing config file in sp-config 
+ * Add \__version__ attribute to securepass package
+ * package split, forgot commit
 
 # 0.4.3
  * Fix import statements in the Django module
