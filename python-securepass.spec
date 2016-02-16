@@ -6,8 +6,8 @@
 %endif
 
 Name:           python-securepass
-Version:        0.4.3
-Release:        4%{?dist}
+Version:        0.4.5
+Release:        1%{?dist}
 Summary:        SecurePass Python tools
 
 License:        GPLv2+
@@ -66,6 +66,9 @@ It uses the SecurePass public APIs.
 %license LICENSE
 
 %changelog
+* Tue Feb 16 2016  Giuseppe Paterno' <gpaterno@gpaterno.com> 0.4.4-1
+- Reflect changes to the upstream package
+
 * Wed Sep 16 2015 Giuseppe Paterno' <gpaterno@gpaterno.com> 0.4.3-4
 - Fixed my own fedora-review errors
 
