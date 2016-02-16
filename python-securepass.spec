@@ -10,6 +10,10 @@ Version:        0.4.5
 Release:        1%{?dist}
 Summary:        SecurePass Python tools
 
+%if 0%{?suse_version}
+Group: 		System Environment/Base
+%endif
+
 License:        GPLv2+
 URL:            https://github.com/garlsecurity/securepass-tools
 Source0:        https://github.com/garlsecurity/securepass-tools/archive/v%{version}/securepass-tools-v%{version}.tar.gz  
