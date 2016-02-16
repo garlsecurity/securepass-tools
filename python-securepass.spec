@@ -1,9 +1,9 @@
 # For EPEL6
-%if 0%{?rhel} && 0%{?rhel} <= 7
+#%if 0%{?rhel} && 0%{?rhel} <= 7 
 %{!?__python2: %global __python2 /usr/bin/python2}
 %{!?python2_sitelib: %global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
 %{!?python2_sitearch: %global python2_sitearch %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
-%endif
+#%endif
 
 Name:           python-securepass
 Version:        0.4.5
@@ -16,13 +16,21 @@ Source0:        https://github.com/garlsecurity/securepass-tools/archive/v%{vers
 
 BuildArch:      noarch
 BuildRequires:  python-pycurl
+
+%if 0%{?fedora} || 0%{?rhel_version} || 0%{?centos_version}
 BuildRequires:  python2-devel
-%if 0%{?rhel} <= 6
+%endif
+
+%if 0%{?suse_version}
+BuildRequires:  python-devel
+%endif
+
+%if 0%{?rhel} <= 6 || 0%{?suse_version}
 BuildRequires:  python-argparse
 %endif
 
 Requires:       python-pycurl
-%if 0%{?rhel} <= 6
+%if 0%{?rhel} <= 6 || 0%{?suse_version}
 Requires:       python-argparse
 %endif
 
@@ -56,14 +64,29 @@ It uses the SecurePass public APIs.
 %{!?_licensedir:%global license %doc}
 %{python2_sitelib}/*
 %doc README.txt README.md 
+
+%if 0%{?fedora} || 0%{?rhel_version} || 0%{?centos_version}
 %license LICENSE
+%endif 
+
+%if 0%{?suse_version}
+%doc LICENSE
+%endif
 
 %files -n securepass-tools
-%{!?_licensedir:%global license %doc}
+%{!?_licensedir:%global license %doc} 
 %defattr(-,root,root,-)
 %{_bindir}/*
 %doc README.txt README.md securepass.conf.example contrib/extract_ssh_key.sh 
+
+%if 0%{?fedora} || 0%{?rhel_version} || 0%{?centos_version}
 %license LICENSE
+%endif
+
+%if 0%{?suse_version}
+%doc LICENSE
+%endif
+
 
 %changelog
 * Tue Feb 16 2016  Giuseppe Paterno' <gpaterno@gpaterno.com> 0.4.4-1
