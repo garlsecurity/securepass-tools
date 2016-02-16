@@ -1,8 +1,9 @@
 CHANGELOG
 =========
 
-# 0.4.4a
+# 0.4.5
   * Added stripping windows domain code from ssh key retrival
+  * Added support for SLES and OpenSUSE
 
 # 0.4.4
  * Fixup for missing config file in sp-config 
