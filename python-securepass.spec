@@ -7,17 +7,16 @@
 
 Name:           python-securepass
 Version:        0.4.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        SecurePass Python tools
 
 %if 0%{?suse_version}
-Group: 		System Environment/Base
+Group: 			System Environment/Libraries
 %endif
 
 License:        GPLv2+
 URL:            https://github.com/garlsecurity/securepass-tools
 Source0:        https://github.com/garlsecurity/securepass-tools/archive/v%{version}/securepass-tools-v%{version}.tar.gz  
-
 BuildArch:      noarch
 BuildRequires:  python-pycurl
 
@@ -27,6 +26,10 @@ BuildRequires:  python2-devel
 
 %if 0%{?suse_version}
 BuildRequires:  python-devel
+%endif
+
+%if 0%{?suse_version} <= 1110
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 %endif
 
 %if 0%{?rhel} <= 6 || 0%{?suse_version}
@@ -48,6 +51,10 @@ It uses the SecurePass public APIs.
 Summary:    SecurePass Tools 
 Requires:   python-securepass
 
+%if 0%{?suse_version}
+Group:      System Environment/Libraries
+%endif
+
 %description -n securepass-tools
 The official tools for accessing SecurePass platform.
 
@@ -60,7 +67,7 @@ It uses the SecurePass public APIs.
 %{__python2} setup.py build
 
 %install
-%{__python2} setup.py install --skip-build --root="%{buildroot}"
+%{__python2} setup.py install --skip-build --prefix=%{_prefix} --root="%{buildroot}"
 
 
 %files 
@@ -93,6 +100,9 @@ It uses the SecurePass public APIs.
 
 
 %changelog
+* Wed Feb 16 2016  Giuseppe Paterno' <gpaterno@gpaterno.com> 0.4.4-2
+- Fixes for SLES 11
+
 * Tue Feb 16 2016  Giuseppe Paterno' <gpaterno@gpaterno.com> 0.4.4-1
 - Reflect changes to the upstream package
 
