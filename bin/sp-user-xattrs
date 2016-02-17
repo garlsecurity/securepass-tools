@@ -26,7 +26,8 @@ parser.add_argument('-D', '--debug',
 parser.add_argument('username', action='store')
 parser.add_argument('operation', action='store', choices=operations)
 parser.add_argument('attribute', nargs="?", default=None)
-parser.add_argument('value', nargs="?", default=None)
+# Using + because we might need to import values with spaces
+parser.add_argument('value', nargs="+", default=None)
 
 values = parser.parse_args()
 
@@ -48,7 +49,10 @@ sp_handler = securepass.SecurePass(app_id=config['app_id'],
 username = values.username
 operation = values.operation
 op_attribute = values.attribute
-op_value = values.value
+
+# op_value is an array when multiple values are forecasted
+# multiple values are important to import ssh keys
+op_value = ''.join(values.value)
 ## If list operation specified
 if operation == "list":
 
