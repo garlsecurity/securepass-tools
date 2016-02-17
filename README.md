@@ -1,3 +1,11 @@
+This branch is WIP and contains a partial refactoring of the
+SecurePass suite. This branch is an attempt to migrate from Python to Golang.
+
+__THIS BRANCH IS NOT READY FOR PRODUCTION ENVIRONMENTS__
+
+
+
+
 SecurePass public CLI tools
 ===========================
 
