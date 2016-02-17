@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+# 0.4.5
+  * Fixes for SSH public keys import with sp-user-xattrs
+  * Fixes in spec for SLES 11
 
 # 0.4.5
   * Added stripping windows domain code from ssh key retrival
