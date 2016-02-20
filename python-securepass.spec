@@ -6,8 +6,8 @@
 #%endif
 
 Name:           python-securepass
-Version:        0.4.5
-Release:        2%{?dist}
+Version:        0.4.6
+Release:        1%{?dist}
 Summary:        SecurePass Python tools
 
 %if 0%{?suse_version}
@@ -17,19 +17,23 @@ Group: 			System Environment/Libraries
 License:        GPLv2+
 URL:            https://github.com/garlsecurity/securepass-tools
 Source0:        https://github.com/garlsecurity/securepass-tools/archive/v%{version}/securepass-tools-v%{version}.tar.gz  
-BuildArch:      noarch
 BuildRequires:  python-pycurl
 
 %if 0%{?fedora} || 0%{?rhel_version} || 0%{?centos_version}
 BuildRequires:  python2-devel
+BuildArch:      noarch
 %endif
 
 %if 0%{?suse_version}
 BuildRequires:  python-devel
 %endif
 
+# SLES11 don't want noarch
+
 %if 0%{?suse_version} <= 1110
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+%else
+BuildArch:      noarch
 %endif
 
 %if 0%{?rhel} <= 6 || 0%{?suse_version}
