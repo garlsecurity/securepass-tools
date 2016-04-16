@@ -27,9 +27,10 @@ parser.add_argument('username', action='store')
 parser.add_argument('operation', action='store', choices=operations)
 parser.add_argument('attribute', nargs="?", default=None)
 # Using + because we might need to import values with spaces
-parser.add_argument('value', nargs="+", default=None)
+parser.add_argument('value', nargs="?", default=None)
 
 values = parser.parse_args()
+
 
 ## Set debug
 FORMAT = '%(asctime)-15s %(levelname)s: %(message)s'
@@ -52,7 +53,12 @@ op_attribute = values.attribute
 
 # op_value is an array when multiple values are forecasted
 # multiple values are important to import ssh keys
-op_value = ''.join(values.value)
+if values.value:
+    op_value = ''.join(values.value)
+else:
+    op_value = ''
+
+
 ## If list operation specified
 if operation == "list":
 

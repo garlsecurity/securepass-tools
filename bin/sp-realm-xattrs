@@ -49,6 +49,7 @@ realm = values.realm
 operation = values.operation
 op_attribute = values.attribute
 op_value = values.value
+
 ## If list operation specified
 if operation == "list":
 
