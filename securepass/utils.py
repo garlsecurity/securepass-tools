@@ -12,20 +12,38 @@ import ConfigParser
 import os
 import sys
 
+DEFAULT_CONF_FILENAME = "securepass.conf"
+
+
+def _path_to_conffile(*path):
+    return os.path.join(*(path + (DEFAULT_CONF_FILENAME,)))
+
+
+def _list_conffiles_locations():
+    prefix = sys.prefix
+    venv_prefix = None
+    if hasattr(sys, 'real_prefix'):
+        prefix = sys.real_prefix
+        venv_prefix = sys.prefix
+
+    conffiles = [
+        _path_to_conffile(prefix, "etc"),
+        _path_to_conffile(prefix, "usr", "local", "etc"),
+        _path_to_conffile(os.getcwd()),
+    ]
+    if venv_prefix is not None:
+        conffiles.extend([
+            _path_to_conffile(venv_prefix),
+            _path_to_conffile(venv_prefix, "etc"),
+        ])
+
+    return conffiles
+
 
 def loadConfig():
     """loadConfig returns cassandra servers"""
 
-    conffiles = ['/etc/securepass.conf',
-                 '/usr/local/etc/securepass.conf',
-                 os.getcwd() + '/securepass.conf']
-    #conffiles.append(os.path.join(os.path.expanduser("~"), ".securepass"))
-
-    ## Virtual Environment handling
-    # VIRTUAL_ENV is not reliable, switching to sys.real_prefix
-    if hasattr(sys, 'real_prefix'):
-        conffiles.append(sys.prefix + "/securepass.conf")
-        conffiles.append(sys.prefix + "/etc/securepass.conf")
+    conffiles = _list_conffiles_locations()
 
     conf_found = 0
 
